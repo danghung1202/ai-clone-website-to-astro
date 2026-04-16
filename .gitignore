@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+
+# Research screenshots (large files, don't commit)
+docs/research/*.png
+docs/research/components/*.png
+
+# Downloaded assets during clone (commit selectively)
+# public/images/
