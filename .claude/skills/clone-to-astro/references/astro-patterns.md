@@ -11,24 +11,27 @@ The config file is `src/content.config.ts` (NOT `src/content/config.ts` — the 
 
 ```typescript
 // src/content.config.ts
+// Adapt collection names and fields to match the target site.
+// This example shows a generic "items" collection — yours might be
+// products, services, recipes, projects, listings, courses, etc.
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const tours = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/tours' }),
+const items = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/items' }),
   schema: z.object({
     title: z.string(),
     slug: z.string(),
-    price: z.number(),
-    currency: z.enum(['USD', 'VND', 'EUR']),
-    duration: z.string(),
-    groupSize: z.string(),
+    description: z.string().optional(),
     category: z.string(),
     featured: z.boolean().default(false),
     images: z.array(z.string()),
-    bookingLink: z.string().url(),
     excerpt: z.string().optional(),
-    order: z.number().optional(),
+    // Add fields specific to your target site:
+    // price: z.number(),
+    // duration: z.string(),
+    // rating: z.number(),
+    // ctaLink: z.string().url(),
   }),
 });
 
@@ -56,25 +59,25 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { tours, pages, blog };
+export const collections = { items, pages, blog };
 ```
 
 ### Querying Collections in Pages
 
 ```astro
 ---
-// src/pages/index.astro — Homepage listing tours
+// src/pages/index.astro — Homepage listing items from a collection
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import TourCard from '../components/TourCard.astro';
+import ItemCard from '../components/ItemCard.astro';
 
-const tours = await getCollection('tours');
-const featured = tours.filter(t => t.data.featured);
+const items = await getCollection('items');
+const featured = items.filter(t => t.data.featured);
 ---
 <BaseLayout title="Home">
-  <section class="tours-grid">
-    {featured.map(tour => (
-      <TourCard tour={tour} />
+  <section class="items-grid">
+    {featured.map(item => (
+      <ItemCard item={item} />
     ))}
   </section>
 </BaseLayout>
@@ -84,24 +87,25 @@ const featured = tours.filter(t => t.data.featured);
 
 ```astro
 ---
-// src/pages/tours/[...slug].astro
+// src/pages/items/[...slug].astro
+// Replace "items" with whatever the collection is (products, services, etc.)
 import { getCollection, render } from 'astro:content';
-import TourLayout from '../../layouts/TourLayout.astro';
+import ItemLayout from '../../layouts/ItemLayout.astro';
 
 export async function getStaticPaths() {
-  const tours = await getCollection('tours');
-  return tours.map(tour => ({
-    params: { slug: tour.data.slug },
-    props: { tour },
+  const items = await getCollection('items');
+  return items.map(item => ({
+    params: { slug: item.data.slug },
+    props: { item },
   }));
 }
 
-const { tour } = Astro.props;
-const { Content } = await render(tour);
+const { item } = Astro.props;
+const { Content } = await render(item);
 ---
-<TourLayout tour={tour.data}>
+<ItemLayout item={item.data}>
   <Content />
-</TourLayout>
+</ItemLayout>
 ```
 
 ### Important Notes
@@ -109,7 +113,7 @@ const { Content } = await render(tour);
 - After changing `content.config.ts`, restart the dev server or press `s + Enter` to sync.
 - The `render()` function replaces the old `entry.render()` method in Astro 5+.
 - Collection entries have `.data` (frontmatter) and can be rendered to get `.Content`.
-- The `id` field is auto-generated from the filename (e.g., `taste-of-hanoi` from `taste-of-hanoi.md`).
+- The `id` field is auto-generated from the filename (e.g., `my-item` from `my-item.md`).
 
 ---
 
@@ -121,38 +125,37 @@ Every component must have a typed Props interface:
 
 ```astro
 ---
-// src/components/TourCard.astro
+// src/components/ItemCard.astro
+// Adapt the Props interface to match the target site's content fields.
+// This is a generic card — yours might show price, rating, date, author, etc.
 interface Props {
-  tour: {
+  item: {
     data: {
       title: string;
       slug: string;
-      price: number;
-      currency: string;
-      duration: string;
       images: string[];
       excerpt?: string;
+      category?: string;
+      // Add whatever fields the target site shows on cards
     };
   };
+  basePath?: string; // e.g., "/services", "/products", "/blog"
 }
 
-const { tour } = Astro.props;
-const { title, slug, price, currency, duration, images, excerpt } = tour.data;
+const { item, basePath = '/items' } = Astro.props;
+const { title, slug, images, excerpt, category } = item.data;
 ---
-<a href={`/tours/${slug}`} class="tour-card">
+<a href={`${basePath}/${slug}`} class="item-card">
   <img src={images[0]} alt={title} loading="lazy" />
-  <div class="tour-card__content">
+  <div class="item-card__content">
     <h3>{title}</h3>
     {excerpt && <p>{excerpt}</p>}
-    <div class="tour-card__meta">
-      <span>{duration}</span>
-      <span class="tour-card__price">{currency} {price}/person</span>
-    </div>
+    {category && <span class="item-card__category">{category}</span>}
   </div>
 </a>
 
 <style>
-  .tour-card {
+  .item-card {
     display: block;
     text-decoration: none;
     color: inherit;
@@ -160,7 +163,7 @@ const { title, slug, price, currency, duration, images, excerpt } = tour.data;
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .tour-card:hover {
+  .item-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px rgba(0,0,0,0.1);
   }
@@ -174,46 +177,34 @@ Layouts extend BaseLayout and accept typed data:
 
 ```astro
 ---
-// src/layouts/TourLayout.astro
+// src/layouts/ItemLayout.astro
+// Adapt to the target site's detail page structure.
+// This is a generic detail layout — yours might show price, specs, reviews, etc.
 import BaseLayout from './BaseLayout.astro';
-import BookingCTA from '../components/BookingCTA.astro';
 import ImageGallery from '../components/ImageGallery.astro';
 
 interface Props {
-  tour: {
+  item: {
     title: string;
-    price: number;
-    currency: string;
-    duration: string;
-    groupSize: string;
     images: string[];
-    bookingLink: string;
+    // Add whatever fields the detail page displays
   };
 }
 
-const { tour } = Astro.props;
+const { item } = Astro.props;
 ---
-<BaseLayout title={tour.title}>
-  <article class="tour-detail">
-    <ImageGallery images={tour.images} alt={tour.title} />
+<BaseLayout title={item.title}>
+  <article class="item-detail">
+    <ImageGallery images={item.images} alt={item.title} />
 
-    <div class="tour-detail__content">
-      <h1>{tour.title}</h1>
+    <div class="item-detail__content">
+      <h1>{item.title}</h1>
 
-      <div class="tour-detail__meta">
-        <span>{tour.duration}</span>
-        <span>{tour.groupSize}</span>
-      </div>
-
-      <div class="tour-detail__body">
+      <div class="item-detail__body">
         <slot />  <!-- Markdown body content renders here -->
       </div>
 
-      <BookingCTA
-        price={tour.price}
-        currency={tour.currency}
-        link={tour.bookingLink}
-      />
+      <!-- Add CTA, pricing, metadata components as needed -->
     </div>
   </article>
 </BaseLayout>
@@ -323,7 +314,7 @@ can migrate to `src/assets/` later for optimization.
 ```markdown
 ---
 images:
-  - /images/tours/taste-01.jpg
+  - /images/services/web-design-01.jpg
 ---
 ```
 

@@ -51,7 +51,7 @@ The result: adding a new page to the cloned site = creating a new `.md` file. No
 src/
 ├── content.config.ts       # Zod schemas for all collections
 ├── content/                # Markdown content files
-│   ├── tours/*.md
+│   ├── {collection}/*.md
 │   ├── blog/*.md
 │   └── pages/*.md
 ├── layouts/                # Reusable page templates

@@ -47,12 +47,12 @@ If a session ends mid-clone, a new session reads the spec files to resume.
 src/
 ├── content.config.ts          # Auto-generated Zod schema
 ├── content/
-│   ├── tours/*.md             # Content files per collection
+│   ├── {collection}/*.md       # Content files per collection (e.g., services, products)
 │   ├── blog/*.md
 │   └── pages/*.md
 ├── layouts/
 │   ├── BaseLayout.astro       # Header + footer + global styles
-│   ├── TourLayout.astro       # Tour detail template
+│   ├── {Type}Layout.astro     # Detail page template per type
 │   └── PageLayout.astro       # Generic page template
 ├── components/
 │   ├── Header.astro
@@ -60,7 +60,7 @@ src/
 │   └── *.astro                # Reusable components
 ├── pages/
 │   ├── index.astro            # Homepage
-│   ├── tours/[...slug].astro  # Dynamic routes from collections
+│   ├── {type}/[...slug].astro # Dynamic routes from collections
 │   └── [slug].astro           # Static pages from collection
 └── styles/
     └── global.css             # Extracted design tokens

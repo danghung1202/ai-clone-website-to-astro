@@ -11,5 +11,5 @@ full-site
 <!-- Any special instructions, pages to skip, or content to customize -->
 <!-- Example: -->
 <!-- - Skip the blog section -->
-<!-- - Replace booking links with WhatsApp links -->
+<!-- - Replace external form links with local contact page links -->
 <!-- - Use placeholder images if originals can't be downloaded -->

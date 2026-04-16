@@ -32,7 +32,7 @@ Run these checks before anything else. If any fail, stop and tell the user.
 2. **Read `TARGET.md`** for the URL and any scope notes. If it doesn't match `$ARGUMENTS`, update it.
 3. **Verify the base project exists.** Check if `package.json` has `astro` as a dependency.
    - If YES: run `npm run build` to confirm it compiles.
-   - If NO: scaffold from `templates/astro-scaffold/` or run:
+   - If NO: scaffold a new Astro project:
      ```bash
      npm create astro@latest . -- --template minimal --no-install --no-git
      npx astro add tailwind --yes
@@ -54,8 +54,8 @@ These are non-negotiable. They override any shortcut instincts.
 
 ### 1. Page Types, Not Pages
 
-You are identifying TYPES of pages, not cloning individual pages. A site with 50 tour detail pages
-has ONE tour detail type. You build ONE `TourLayout.astro` and extract 50 `.md` files that use it.
+You are identifying TYPES of pages, not cloning individual pages. A site with 50 product detail pages
+has ONE product detail type. You build ONE `ProductLayout.astro` and extract 50 `.md` files that use it.
 
 ### 2. Content Separation Is the Whole Point
 
@@ -80,7 +80,7 @@ No phase may start until its predecessor completes. Each phase builds on the pre
 
 ### 5. Extract How It Looks AND How It Behaves
 
-Use `getComputedStyle()` via Chrome MCP for exact CSS values — never eyeball or approximate.
+Use `getComputedStyle()` via browser JS execution for exact CSS values — never eyeball or approximate.
 Also capture behaviors: scroll-triggered animations, hover states, carousels, sticky headers.
 Document both the static appearance and the dynamic behavior in every spec file.
 
@@ -116,7 +116,7 @@ The only time you generate placeholder content is when something is clearly sess
    ```
 
 5. For each page type, visit ONE representative page and note:
-   - URL pattern (e.g., `/tours/[slug]`, `/blog/[slug]`)
+   - URL pattern (e.g., `/services/[slug]`, `/blog/[slug]`)
    - Key sections visible on the page
    - What content varies between pages of this type vs what is shared
    - Interactive elements (carousels, tabs, accordions, forms)
@@ -137,9 +137,9 @@ The only time you generate placeholder content is when something is clearly sess
 
    ## Navigation Structure
    - Home → /
-   - Tours → /tours (listing)
-     - Taste of Hanoi → /tours/taste-of-hanoi (detail)
-     - Hanoi Hopping → /tours/hanoi-hopping (detail)
+   - Services → /services (listing)
+     - Web Design → /services/web-design (detail)
+     - SEO → /services/seo (detail)
      ...
    - About → /about (static)
    - Blog → /blog (blog-index)
@@ -150,15 +150,15 @@ The only time you generate placeholder content is when something is clearly sess
 
    ### 1. homepage (1 page)
    Representative: /
-   Sections: hero, tour-cards-grid, testimonials, CTA-banner
+   Sections: hero, services-grid, testimonials, CTA-banner
    Interactive: image carousel in hero, category filter tabs
 
-   ### 2. tour-detail (6 pages)
-   Representative: /tours/taste-of-hanoi
-   URL pattern: /tours/[slug]
-   Sections: image-gallery, description, pricing, booking-CTA, related-tours
-   Content that varies: title, images, description, price, duration, group-size
-   Content that's shared: header, footer, booking button behavior, layout
+   ### 2. service-detail (6 pages)
+   Representative: /services/web-design
+   URL pattern: /services/[slug]
+   Sections: image-gallery, description, pricing, CTA, related-services
+   Content that varies: title, images, description, price, features
+   Content that's shared: header, footer, CTA behavior, layout
    Interactive: image gallery lightbox
 
    ### 3. static (3 pages: about, faq, contact)
@@ -173,8 +173,8 @@ The only time you generate placeholder content is when something is clearly sess
    ## Shared Components Identified
    - Header (with nav + mobile menu)
    - Footer (with social links + copyright)
-   - Tour card (used on homepage + related tours)
-   - Booking CTA button
+   - Service card (used on homepage + related services)
+   - CTA button
    - Image gallery
    ```
 
@@ -254,41 +254,46 @@ The only time you generate placeholder content is when something is clearly sess
 1. For each page type that has VARYING content (detail pages, blog posts, static pages), define
    a Content Collection with a Zod schema matching the content fields identified in Phase 1.
 
-2. Visit one representative page per type. Extract all content fields and their types:
+2. Visit one representative page per type. Extract all content fields and their types.
+   Example for a services site:
    ```
-   Tour Detail → title (string), slug (string), price (number), currency (enum),
-   duration (string), groupSize (string), description (string, long),
-   images (array of strings), category (enum), featured (boolean),
-   bookingLink (string, url)
+   Service Detail → title (string), slug (string), price (number), currency (enum),
+   features (array of strings), description (string, long),
+   images (array of strings), category (string), featured (boolean),
+   ctaLink (string, url)
    ```
+   The actual fields depend entirely on the target site. A recipe site would have ingredients,
+   cook time, servings. A portfolio site would have client name, project type, year. Extract
+   whatever fields are present on the page.
 
 3. Write `docs/research/content-schema.md` documenting every collection and field.
 
-4. Generate `src/content.config.ts`:
+4. Generate `src/content.config.ts`. Here is an example for a services site — adapt the
+   collections and fields to match whatever the target site actually contains:
 
    ```typescript
    import { defineCollection, z } from 'astro:content';
    import { glob } from 'astro/loaders';
 
-   const tours = defineCollection({
-     loader: glob({ pattern: '**/*.md', base: './src/content/tours' }),
+   // Example: a services site. YOUR schema will differ based on the target.
+   const services = defineCollection({
+     loader: glob({ pattern: '**/*.md', base: './src/content/services' }),
      schema: z.object({
        title: z.string(),
        slug: z.string(),
-       price: z.number(),
-       currency: z.enum(['USD', 'VND']),
-       duration: z.string(),
-       groupSize: z.string(),
+       price: z.number().optional(),
+       description: z.string(),
        category: z.string(),
        featured: z.boolean().default(false),
        images: z.array(z.string()),
-       bookingLink: z.string().url(),
+       ctaLink: z.string().url().optional(),
        excerpt: z.string().optional(),
      }),
    });
 
-   // Repeat for blog, pages, etc.
-   export const collections = { tours };
+   // Repeat for every content type found on the target site
+   // (blog, pages, team members, products, recipes, projects, etc.)
+   export const collections = { services };
    ```
 
    **Important:** Use the Astro 5+ Content Layer API with `loader: glob()` — not the legacy
@@ -418,32 +423,33 @@ For EACH page within a content collection:
    - Text: use `element.textContent` via JS execution in Chrome MCP
    - Images: collect all `<img>` src URLs → save to download list
    - Links: extract href values for CTAs and navigation
-3. Write the Markdown file with YAML frontmatter:
+3. Write the Markdown file with YAML frontmatter. Example for a services site:
 
    ```markdown
    ---
-   title: "Taste of Hanoi"
-   slug: taste-of-hanoi
-   price: 35
-   currency: USD
-   duration: "3-3.5 hours"
-   groupSize: "2-8 people"
-   category: foodie
+   title: "Web Design"
+   slug: web-design
+   price: 2500
+   description: "Custom responsive websites built for performance"
+   category: design
    featured: true
    images:
-     - /images/tours/taste-01.jpg
-     - /images/tours/taste-02.jpg
-   bookingLink: "https://wa.me/84xxx?text=Book Taste of Hanoi"
-   excerpt: "A flavorful introduction to Hanoi's street cuisine"
+     - /images/services/web-design-01.jpg
+     - /images/services/web-design-02.jpg
+   ctaLink: "/contact?service=web-design"
+   excerpt: "Custom responsive websites built for performance and conversion"
    ---
 
-   The tour offers a flavorful introduction to Hanoi's street cuisine
-   by tasting the best local dishes...
+   We create beautiful, fast websites tailored to your brand.
+   Our process starts with understanding your goals...
    ```
 
+   The frontmatter fields MUST match the schema defined in Phase 3.
+   The body below the `---` is the free-form Markdown content for that page.
+
 4. Write `docs/research/content/{collection}-extraction.md` documenting what was extracted
-   from each page and any decisions made (e.g., "booking link was a Wix form — replaced with
-   WhatsApp link placeholder").
+   from each page and any decisions made (e.g., "CTA linked to a third-party form — replaced
+   with local contact page link").
 
 ---
 
@@ -455,17 +461,16 @@ For EACH page within a content collection:
 ### Steps
 
 1. Compile the full list of image URLs from all spec files and content files.
-2. Create directory structure:
+2. Create directory structure mirroring the content collections found:
    ```
    public/images/
-   ├── tours/
-   ├── blog/
-   ├── general/
-   └── icons/
+   ├── {collection-name}/    # One folder per content collection
+   ├── general/              # Shared images (hero, backgrounds)
+   └── icons/                # Extracted SVG icons
    ```
 3. Download each image using `curl`:
    ```bash
-   curl -L -o public/images/tours/taste-01.jpg "https://..."
+   curl -L -o public/images/services/web-design-01.jpg "https://..."
    ```
 4. For inline SVGs extracted from the site, save as `.astro` components in `src/components/icons/`.
 5. Download web fonts if they're self-hosted (not Google Fonts CDN).
@@ -495,10 +500,10 @@ For EACH page within a content collection:
    ## Clone Complete
 
    Target: https://example.com
-   Page types: 4 (homepage, tour-detail, static, blog-post)
-   Content collections: 2 (tours: 6 entries, pages: 3 entries)
-   Components: 8 (Header, Footer, TourCard, ImageGallery, ...)
-   Layouts: 3 (BaseLayout, TourLayout, PageLayout)
+   Page types: N (list them: homepage, {type}-detail, static, blog-post, ...)
+   Content collections: N ({name}: X entries, {name}: Y entries, ...)
+   Components: N (Header, Footer, {Name}Card, ...)
+   Layouts: N (BaseLayout, {Type}Layout, PageLayout, ...)
 
    ### Ready for deployment
    - `npm run build` → outputs to dist/
