@@ -8,12 +8,13 @@ A Claude Code skill that reverse-engineers any website and rebuilds it as a prod
 Unlike pixel-perfect single-page cloners, this skill produces a **maintainable content site**:
 
 - Identifies **page types** (homepage, listing, detail, static) — not individual pages
+- Detects **shared components** across page types before building anything
 - Builds **reusable Astro layouts and components** for each page type
-- Extracts real content into **Markdown files with YAML frontmatter**
+- Extracts sample content into **Markdown files with YAML frontmatter**
 - Generates **Content Collections with Zod schema validation**
 - Downloads and organizes **images, fonts, and SVG assets**
 
-The result: adding a new page to the cloned site = creating a new `.md` file. No code changes needed.
+The result: adding a new page to the cloned site = creating a new `.md` file.
 
 ## Requirements
 
@@ -36,8 +37,7 @@ The result: adding a new page to the cloned site = creating a new `.md` file. No
    clone-to-astro https://www.example.com
    ```
 
-4. The skill walks through 8 phases automatically, writing audit specs to `docs/research/`
-   and building the Astro project in the repo root.
+4. The skill walks through 10 phases, pausing at 6 review gates for your input.
 
 5. When complete:
    ```bash
@@ -45,37 +45,47 @@ The result: adding a new page to the cloned site = creating a new `.md` file. No
    npm run preview  # Preview locally
    ```
 
+## How It Works
+
+| Phase | Review? | What happens |
+|---|---|---|
+| 1. Recon | ⏸ Yes | Crawl nav, group URLs by pattern, identify page types |
+| 2. Foundation | ⏸ Yes | Extract design tokens (colors, fonts, spacing) via browser |
+| 3. Schema | ⏸ Yes | Generate Content Collections config with Zod validation |
+| 4. Base layout | No | Build header, footer, and base template |
+| 5a. Component inventory | ⏸ Yes | Catalog UI blocks, detect shared vs page-specific |
+| 5b. Shared components | No | Build reusable components first |
+| 5c. Page-type layouts | No | Build one layout per page type using shared components |
+| 6. Content (samples) | ⏸ Yes | Extract 2-3 sample .md files per collection |
+| 7. Assets | No | Download images, fonts, SVGs for sample pages |
+| 8. Build verify | ⏸ Yes | Visual comparison of original vs clone screenshots |
+
+### Resumability
+
+Progress is tracked in `docs/research/progress.md`. If a session ends mid-clone
+(token limit, timeout, Ctrl+C), a new session reads the progress file and resumes
+from the last completed checkpoint.
+
+### Adding remaining content
+
+Phase 6 intentionally extracts only 2-3 sample pages per content type. After the clone
+is verified, add remaining content by creating new `.md` files in `src/content/{collection}/`
+following the frontmatter format shown in the samples.
+
 ## Output Structure
 
 ```
 src/
 ├── content.config.ts       # Zod schemas for all collections
-├── content/                # Markdown content files
+├── content/                # Sample Markdown content files
 │   ├── {collection}/*.md
 │   ├── blog/*.md
 │   └── pages/*.md
 ├── layouts/                # Reusable page templates
-├── components/             # Reusable UI components
+├── components/             # Shared + page-specific UI components
 ├── pages/                  # Astro routes
 └── styles/global.css       # Extracted design tokens
 ```
-
-## How It Works
-
-| Phase | What happens |
-|---|---|
-| 1. Recon | Crawl navigation, identify page types, classify URL patterns |
-| 2. Foundation | Extract design tokens (colors, fonts, spacing) via Chrome MCP |
-| 3. Schema | Generate Content Collections config with Zod validation |
-| 4. Base layout | Build header, footer, and base template |
-| 5. Page types | Build one layout + route per page type |
-| 6. Content | Extract real text/metadata into Markdown files |
-| 7. Assets | Download images, fonts, SVGs to `public/` |
-| 8. Verify | Run `astro check` + `astro build`, compare screenshots |
-
-Each phase writes a spec file to `docs/research/` before producing code.
-Sessions can be resumed — a new Claude Code session reads the spec files and picks up
-at the first incomplete phase.
 
 ## Deployment
 

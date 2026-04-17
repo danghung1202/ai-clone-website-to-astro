@@ -8,11 +8,6 @@ This project clones websites into production-ready Astro sites with Content Coll
 clone-to-astro <url>
 ```
 
-This triggers the `clone-to-astro` skill which:
-1. Crawls the target site's navigation to identify page types
-2. Extracts design tokens, layouts, and content
-3. Builds an Astro project with Content Collections, reusable layouts, and Markdown content files
-
 ## Requirements
 
 - Chrome MCP must be enabled (browser automation for extraction)
@@ -24,22 +19,28 @@ This triggers the `clone-to-astro` skill which:
 - `.claude/skills/clone-to-astro/references/astro-patterns.md` — Astro 5+ patterns
 - `.claude/skills/clone-to-astro/references/extraction-patterns.md` — Chrome MCP extraction snippets
 - `TARGET.md` — Target URL and scope configuration
+- `docs/research/progress.md` — Clone progress tracker (auto-generated)
 - `docs/research/` — Extraction specs and screenshots (audit trail)
 
 ## How It Works
 
-The skill follows 8 sequential phases:
-1. Site reconnaissance (crawl nav, identify page types)
-2. Foundation extraction (design tokens, fonts, colors)
-3. Content schema generation (Zod schemas for Content Collections)
-4. Base layout extraction (header, footer, base template)
-5. Page-type layout extraction (one layout per page type)
-6. Content extraction (Markdown files with YAML frontmatter)
-7. Asset pipeline (download images, fonts, SVGs)
-8. Build verification (astro check + astro build)
+The skill follows 10 phases with 6 user review gates:
 
-Each phase writes a spec file to `docs/research/` before producing code.
-If a session ends mid-clone, a new session reads the spec files to resume.
+| Phase | Review? | What happens |
+|---|---|---|
+| 1. Recon | ⏸ Yes | Crawl nav, group URLs, identify page types |
+| 2. Foundation | ⏸ Yes | Extract design tokens (colors, fonts, spacing) |
+| 3. Schema | ⏸ Yes | Generate Content Collections config with Zod validation |
+| 4. Base layout | No | Build header, footer, base template |
+| 5a. Component inventory | ⏸ Yes | Detect shared vs page-specific components |
+| 5b. Shared components | No | Build reusable components first |
+| 5c. Page-type layouts | No | Build one layout per page type using shared components |
+| 6. Content (samples) | ⏸ Yes | Extract 2-3 sample .md files per collection |
+| 7. Assets | No | Download images, fonts, SVGs for samples |
+| 8. Build verify | ⏸ Yes | Visual comparison: original vs clone |
+
+Progress is tracked in `docs/research/progress.md`. If a session ends mid-clone,
+a new session reads the progress file and resumes from the last checkpoint.
 
 ## Output Structure
 
@@ -47,7 +48,7 @@ If a session ends mid-clone, a new session reads the spec files to resume.
 src/
 ├── content.config.ts          # Auto-generated Zod schema
 ├── content/
-│   ├── {collection}/*.md       # Content files per collection (e.g., services, products)
+│   ├── {collection}/*.md      # Sample content files (2-3 per type)
 │   ├── blog/*.md
 │   └── pages/*.md
 ├── layouts/
@@ -57,7 +58,7 @@ src/
 ├── components/
 │   ├── Header.astro
 │   ├── Footer.astro
-│   └── *.astro                # Reusable components
+│   └── *.astro                # Shared + page-specific components
 ├── pages/
 │   ├── index.astro            # Homepage
 │   ├── {type}/[...slug].astro # Dynamic routes from collections
