@@ -26,20 +26,28 @@ The result: adding a new page to the cloned site = creating a new `.md` file.
 
 1. Clone this repo:
    ```bash
-   git clone https://github.com/your-username/clone-to-astro.git
-   cd clone-to-astro
+   git clone https://github.com/danghung1202/ai-clone-website-to-astro.git <your-clone-website-folder>
+   cd your-clone-website-folder
    ```
 
-2. Edit `TARGET.md` with your target URL.
-
-3. Open in Claude Code and run:
+2. **Install dependencies**
+   ```bash
+   npm install
    ```
-   clone-to-astro https://www.example.com
+3. **Start your AI agent** — Claude Code recommended:
+   ```bash
+   claude --chrome
    ```
 
-4. The skill walks through 10 phases, pausing at 6 review gates for your input.
+4. Open in Claude Code and run:
+   ```
+   /clone-to-astro https://www.example.com
+   ```
 
-5. When complete:
+   It will edit `TARGET.md` with your target URL.
+5. The skill walks through 10 phases, pausing at 6 review gates for your input.
+
+6. When complete:
    ```bash
    npm run build    # Build static site
    npm run preview  # Preview locally
