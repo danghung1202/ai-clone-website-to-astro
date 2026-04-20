@@ -10,3 +10,4 @@ docs/research/components/*.png
 
 # Downloaded assets during clone (commit selectively)
 # public/images/
+.claude/settings.local.json
