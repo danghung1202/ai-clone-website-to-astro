@@ -66,6 +66,49 @@ for (const forbidden of ["venetian-astro.local", "example.com", "localhost:3000"
 
 check(builtHome.includes("PNK Beauty Klinik"), "Home HTML should contain PNK Beauty Klinik");
 check(builtHome.includes("Bokadirekt"), "Home HTML should contain Bokadirekt booking copy");
+check(builtHome.includes("application/ld+json"), "Home HTML should contain structured data");
+check(builtHome.includes("\"@type\":\"LocalBusiness\""), "Home structured data should include LocalBusiness");
+
+const pageChecks = [
+  {
+    route: "/behandlingar/lappfillers-boras/",
+    expected: ["Hyaluron Pen", "60 min", "Läppar 1 ml", "30 min"]
+  },
+  {
+    route: "/behandlingar/kemisk-peeling-boras/",
+    expected: [
+      "Kemisk peeling",
+      "Från 1 500 kr",
+      "45 min",
+      "Kemisk peeling med kit",
+      "3 990 kr",
+      "60 min",
+      "Ekologisk peeling",
+      "2 195 kr",
+      "80 min"
+    ]
+  },
+  {
+    route: "/behandlingar/marina-miracles-boras/",
+    expected: [
+      "Marina Miracles Express",
+      "995 kr",
+      "30 min",
+      "Marina Miracles Full cover",
+      "1 695 kr",
+      "60 min"
+    ]
+  }
+];
+
+for (const { route, expected } of pageChecks) {
+  const file = routeToFile(route);
+  if (!existsSync(file)) continue;
+  const html = readFileSync(file, "utf8");
+  for (const text of expected) {
+    check(html.includes(text), `${route} should contain verified Bokadirekt value: ${text}`);
+  }
+}
 
 if (failures.length) {
   console.error("Static build verification failed:");

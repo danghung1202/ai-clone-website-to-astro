@@ -390,10 +390,10 @@ export const treatments: Treatment[] = [
     image: "/images/pnk/lip-filler.jpg",
     chips: ["Läppar", "Hyaluron Pen", "1 ml"],
     priceFrom: "Från 2 195 kr",
-    duration: "30 min",
+    duration: "30-60 min",
     practitioner: "Siamak Ghazanfari",
     priceOptions: [
-      { label: "Hyaluron Pen", price: "Från 2 195 kr", duration: "30 min" },
+      { label: "Hyaluron Pen", price: "Från 2 195 kr", duration: "60 min" },
       { label: "Läppar 1 ml", price: "Från 2 500 kr", duration: "30 min" }
     ],
     suitableFor: fillerSuitableFor,
@@ -499,8 +499,8 @@ export const treatments: Treatment[] = [
     practitioner: "PNK Beauty Klinik",
     priceOptions: [
       { label: "Kemisk peeling", price: "Från 1 500 kr", duration: "45 min" },
-      { label: "Kemisk peeling med kit", price: "Från 1 500 kr", duration: "80 min" },
-      { label: "Ekologisk peeling", price: "Från 1 500 kr", duration: "45 min" }
+      { label: "Kemisk peeling med kit", price: "3 990 kr", duration: "60 min" },
+      { label: "Ekologisk peeling", price: "2 195 kr", duration: "80 min" }
     ],
     related: ["biorepeel-boras", "microneedling-boras", "klassisk-ansiktsbehandling-boras"],
     seoTitle: "Kemisk peeling Borås - PNK Beauty Klinik",
@@ -609,11 +609,11 @@ export const treatments: Treatment[] = [
     image: "/images/pnk/services/facial.webp",
     chips: ["Express", "Full Cover", "Hudvård"],
     priceFrom: "995 kr",
-    duration: "45-70 min",
+    duration: "30-60 min",
     practitioner: "PNK Beauty Klinik",
     priceOptions: [
-      { label: "Marina Miracles Express", price: "995 kr", duration: "45 min" },
-      { label: "Marina Miracles Full cover", price: "1 695 kr", duration: "70 min" }
+      { label: "Marina Miracles Express", price: "995 kr", duration: "30 min" },
+      { label: "Marina Miracles Full cover", price: "1 695 kr", duration: "60 min" }
     ],
     related: ["klassisk-ansiktsbehandling-boras", "pure-cell-treatment-boras", "kemisk-peeling-boras"],
     seoTitle: "Marina Miracles Borås - PNK Beauty Klinik",

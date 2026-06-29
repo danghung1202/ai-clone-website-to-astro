@@ -7,12 +7,40 @@ import Hero from "../components/Hero.astro";
 import Intro from "../components/Intro.astro";
 import Services from "../components/Services.astro";
 import Testimonials from "../components/Testimonials.astro";
+import { site } from "../data/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: site.name,
+  url: site.domain,
+  image: new URL(site.ogImage, site.domain).toString(),
+  telephone: site.phoneMachine,
+  email: site.email,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: site.address.street,
+    postalCode: site.address.postalCode,
+    addressLocality: site.address.city,
+    addressCountry: site.address.country
+  },
+  priceRange: "$$",
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: site.rating.value,
+    reviewCount: site.rating.count,
+    bestRating: "5",
+    worstRating: "1"
+  },
+  sameAs: [site.bookingUrl]
+};
 ---
 
 <BaseLayout
   title="PNK Beauty Klinik - Skönhetsklinik i Borås"
   description="PNK Beauty Klinik i Borås erbjuder Botox, fillers, ansiktsbehandlingar, microneedling, kemisk peeling och skönhetsbehandlingar med specialistsjuksköterska och auktoriserad hudterapeut."
+  jsonLd={localBusinessJsonLd}
 >
   <Header />
   <main>
