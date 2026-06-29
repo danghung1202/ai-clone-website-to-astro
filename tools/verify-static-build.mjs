@@ -23,20 +23,45 @@ check(existsSync(join(dist, "robots.txt")), "Missing dist/robots.txt");
 const sitemap = existsSync(join(dist, "sitemap.xml"))
   ? readFileSync(join(dist, "sitemap.xml"), "utf8")
   : "";
+const sitemapUrls = new Set(
+  [...sitemap.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].map((match) => match[1])
+);
 
 for (const route of expectedRoutes) {
   const file = routeToFile(route);
   check(existsSync(file), `Missing built route file for ${route}`);
-  check(sitemap.includes(`${canonicalHost}${route}`), `Missing sitemap URL for ${route}`);
+  check(sitemapUrls.has(`${canonicalHost}${route}`), `Missing sitemap URL for ${route}`);
 }
 
 const builtHome = existsSync(join(dist, "index.html"))
   ? readFileSync(join(dist, "index.html"), "utf8")
   : "";
+const scannedOutputs = [];
+
+for (const route of expectedRoutes) {
+  const file = routeToFile(route);
+  if (existsSync(file)) {
+    scannedOutputs.push({
+      label: `route HTML for ${route}`,
+      contents: readFileSync(file, "utf8")
+    });
+  }
+}
+
+for (const fileName of ["sitemap.xml", "robots.txt"]) {
+  const file = join(dist, fileName);
+  if (existsSync(file)) {
+    scannedOutputs.push({
+      label: fileName,
+      contents: readFileSync(file, "utf8")
+    });
+  }
+}
 
 for (const forbidden of ["venetian-astro.local", "example.com", "localhost:3000", "your-google-verification-code"]) {
-  check(!builtHome.includes(forbidden), `Forbidden placeholder found in home HTML: ${forbidden}`);
-  check(!sitemap.includes(forbidden), `Forbidden placeholder found in sitemap: ${forbidden}`);
+  for (const output of scannedOutputs) {
+    check(!output.contents.includes(forbidden), `Forbidden placeholder found in ${output.label}: ${forbidden}`);
+  }
 }
 
 check(builtHome.includes("PNK Beauty Klinik"), "Home HTML should contain PNK Beauty Klinik");
