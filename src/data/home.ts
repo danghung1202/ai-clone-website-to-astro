@@ -112,8 +112,8 @@ export const services = [
     chips: ["Manikyr", "Pedikyr", "Nagelvård"]
   },
   {
-    title: "FRANSAR & BRYN",
-    titleLines: ["FRANSAR", "& BRYN"],
+    title: "LASHLIFT",
+    titleLines: ["LASHLIFT", "FRANSAR"],
     eyebrow: "Detaljer som lyfter",
     backgroundPosition: "50% 50%",
     backgroundSize: "cover",
