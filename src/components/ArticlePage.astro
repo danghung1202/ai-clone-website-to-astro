@@ -1,0 +1,82 @@
+---
+import type { Article } from "../data/articles";
+import type { Treatment } from "../data/treatments";
+import ArticleCard from "./ArticleCard.astro";
+import BookingCTA from "./BookingCTA.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import FAQBlock from "./FAQBlock.astro";
+import SubpageHero from "./SubpageHero.astro";
+import TreatmentCard from "./TreatmentCard.astro";
+
+interface Props {
+  article: Article;
+  relatedTreatments: Treatment[];
+  relatedArticles: Article[];
+}
+
+const { article, relatedTreatments, relatedArticles } = Astro.props;
+---
+
+<SubpageHero
+  eyebrow={article.eyebrow}
+  title={article.title}
+  copy={article.summary}
+  image={article.image}
+  actions={[{ label: "Boka rådgivning", href: "/behandlingar/konsultation/" }]}
+/>
+<Breadcrumbs items={[{ label: "Start", href: "/" }, { label: "Artiklar", href: "/artiklar/" }, { label: article.title }]} />
+
+<article class="article-page subpage-section">
+  <div class="subpage-shell article-page-shell">
+    <div class="article-meta subpage-reveal">
+      <span>{article.category}</span>
+      <time datetime={article.updatedDate}>Uppdaterad {article.updatedDate}</time>
+    </div>
+    {
+      article.sections.map((section) => (
+        <section class="article-section subpage-reveal">
+          <h2>{section.heading}</h2>
+          <p>{section.body}</p>
+        </section>
+      ))
+    }
+  </div>
+</article>
+
+<div class="subpage-shell">
+  <FAQBlock items={article.faq} />
+</div>
+
+{
+  relatedTreatments.length > 0 && (
+    <section class="subpage-section">
+      <div class="subpage-shell">
+        <p class="section-kicker">Behandlingar</p>
+        <h2>Relaterade behandlingar</h2>
+        <div class="treatment-grid">
+          {relatedTreatments.map((treatment) => (
+            <TreatmentCard item={treatment} href={`/behandlingar/${treatment.slug}/`} mode="compact" />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  relatedArticles.length > 0 && (
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell">
+        <p class="section-kicker">Läs mer</p>
+        <h2>Fler artiklar</h2>
+        <div class="article-grid">
+          {relatedArticles.map((related) => <ArticleCard article={related} />)}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<div class="subpage-shell">
+  <BookingCTA dark image={article.image} />
+</div>

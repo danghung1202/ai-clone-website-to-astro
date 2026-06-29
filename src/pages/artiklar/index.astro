@@ -1,0 +1,49 @@
+---
+import ArticleCard from "../../components/ArticleCard.astro";
+import BookingCTA from "../../components/BookingCTA.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import SubpageHero from "../../components/SubpageHero.astro";
+import { publishedArticles } from "../../data/articles";
+import { site } from "../../data/site";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Artiklar | PNK Beauty Klinik"
+  description="Läs guider och råd från PNK Beauty Klinik om Botox, fillers, hudvård, eftervård och trygga behandlingar i Borås."
+  canonicalPath="/artiklar/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Artiklar"
+      title="Guider om hud, form och eftervård"
+      copy="Fördjupningar för dig som vill förstå behandlingar, skillnader, eftervård och hur en trygg behandlingsplan börjar."
+      image="/images/pnk/clinic-reception.jpg"
+      actions={[
+        { label: "Boka rådgivning", href: site.bookingUrl, external: true },
+        { label: "Läs artiklar", href: "#artiklar", variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section subpage-section-cream" id="artiklar">
+      <div class="subpage-shell">
+        <p class="section-kicker">Kunskap</p>
+        <h2>Senaste artiklarna</h2>
+        <div class="article-grid">
+          {publishedArticles.map((article) => <ArticleCard article={article} />)}
+        </div>
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <BookingCTA dark />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../../scripts/motion";
+  </script>
+</BaseLayout>

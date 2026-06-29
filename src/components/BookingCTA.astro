@@ -1,0 +1,29 @@
+---
+import { site } from "../data/site";
+
+interface Props {
+  title?: string;
+  copy?: string;
+  image?: string;
+  dark?: boolean;
+}
+
+const {
+  title = "Redo att boka din tid?",
+  copy = "Boka via Bokadirekt eller börja med en konsultation så hjälper PNK Beauty Klinik dig att välja rätt behandling.",
+  image = "/images/pnk/clinic-reception.jpg",
+  dark = false
+} = Astro.props;
+---
+
+<section class:list={["booking-cta", dark && "booking-cta-dark", "subpage-reveal"]}>
+  <div class="booking-cta-copy">
+    <p class="section-kicker">PNK Beauty Klinik</p>
+    <h2>{title}</h2>
+    <p>{copy}</p>
+    <a class:list={["pill-link", !dark && "pill-dark"]} href={site.bookingUrl} target="_blank" rel="noreferrer">
+      Boka via Bokadirekt
+    </a>
+  </div>
+  <img src={image} alt="" loading="lazy" />
+</section>

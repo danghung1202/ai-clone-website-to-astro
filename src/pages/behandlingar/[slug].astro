@@ -1,0 +1,66 @@
+---
+import CategoryPage from "../../components/CategoryPage.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import TreatmentPage from "../../components/TreatmentPage.astro";
+import {
+  getPublishedCategoryBySlug,
+  getRelatedTreatments,
+  getTreatmentsByCategory,
+  publishedCategories,
+  publishedTreatments
+} from "../../data/treatments";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export function getStaticPaths() {
+  const categoryPaths = publishedCategories.map((category) => ({
+    params: { slug: category.slug },
+    props: {
+      kind: "category",
+      category,
+      treatments: getTreatmentsByCategory(category.slug)
+    }
+  }));
+
+  const categorySlugs = new Set(publishedCategories.map((category) => category.slug));
+  const treatmentPaths = publishedTreatments
+    .filter((treatment) => !categorySlugs.has(treatment.slug))
+    .map((treatment) => ({
+      params: { slug: treatment.slug },
+      props: {
+        kind: "treatment",
+        treatment,
+        category: getPublishedCategoryBySlug(treatment.category),
+        relatedTreatments: getRelatedTreatments(treatment)
+      }
+    }));
+
+  return [...categoryPaths, ...treatmentPaths];
+}
+
+const { kind, category, treatment, treatments = [], relatedTreatments = [] } = Astro.props;
+const page = kind === "category" ? category : treatment;
+---
+
+<BaseLayout
+  title={page.seoTitle}
+  description={page.seoDescription}
+  canonicalPath={`/behandlingar/${page.slug}/`}
+  ogImage={page.image}
+>
+  <Header />
+  <main>
+    {
+      kind === "category" ? (
+        <CategoryPage category={category} treatments={treatments} />
+      ) : (
+        <TreatmentPage treatment={treatment} category={category} relatedTreatments={relatedTreatments} />
+      )
+    }
+  </main>
+  <Footer />
+
+  <script>
+    import "../../scripts/motion";
+  </script>
+</BaseLayout>

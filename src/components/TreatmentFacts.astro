@@ -1,0 +1,31 @@
+---
+import type { Treatment } from "../data/treatments";
+
+interface Props {
+  treatment: Treatment;
+}
+
+const { treatment } = Astro.props;
+const note =
+  treatment.sourceStatus === "confirmed-bokadirekt"
+    ? "Pris och tider är sammanställda från Bokadirekt. Kliniken bekräftar alltid aktuell plan vid bokning."
+    : "Uppgifterna behöver bekräftas av kliniken före publicering.";
+---
+
+<aside class="fact-panel subpage-reveal" aria-label="Behandlingsfakta">
+  <dl>
+    <div>
+      <dt>Pris</dt>
+      <dd>{treatment.priceFrom}</dd>
+    </div>
+    <div>
+      <dt>Tid</dt>
+      <dd>{treatment.duration}</dd>
+    </div>
+    <div>
+      <dt>Behandlare</dt>
+      <dd>{treatment.practitioner}</dd>
+    </div>
+  </dl>
+  <p>{note}</p>
+</aside>

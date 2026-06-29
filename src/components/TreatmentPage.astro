@@ -1,0 +1,120 @@
+---
+import type { Treatment, TreatmentCategory } from "../data/treatments";
+import { site } from "../data/site";
+import BookingCTA from "./BookingCTA.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import FAQBlock from "./FAQBlock.astro";
+import SubpageHero from "./SubpageHero.astro";
+import TreatmentCard from "./TreatmentCard.astro";
+import TreatmentFacts from "./TreatmentFacts.astro";
+
+interface Props {
+  treatment: Treatment;
+  relatedTreatments: Treatment[];
+  category?: TreatmentCategory;
+}
+
+const { treatment, relatedTreatments, category } = Astro.props;
+---
+
+<SubpageHero
+  eyebrow={treatment.eyebrow}
+  title={treatment.title}
+  copy={treatment.summary}
+  image={treatment.image}
+  actions={[
+    { label: "Boka behandling", href: site.bookingUrl, external: true },
+    { label: "Läs fakta", href: "#fakta", variant: "light" }
+  ]}
+/>
+<Breadcrumbs
+  items={[
+    { label: "Start", href: "/" },
+    { label: "Behandlingar", href: "/behandlingar/" },
+    ...(category ? [{ label: category.title, href: `/behandlingar/${category.slug}/` }] : []),
+    { label: treatment.title }
+  ]}
+/>
+
+<section class="subpage-section treatment-detail" id="fakta">
+  <div class="subpage-shell treatment-detail-grid">
+    <article class="subpage-reveal">
+      <p class="section-kicker">{treatment.eyebrow}</p>
+      <h2>{treatment.description}</h2>
+      <p>
+        Varje behandling planeras individuellt utifrån hud, anatomi, tidigare
+        behandlingar och önskat uttryck. Målet är ett resultat som känns
+        balanserat och hållbart över tid.
+      </p>
+    </article>
+    <TreatmentFacts treatment={treatment} />
+  </div>
+</section>
+
+{
+  treatment.priceOptions.length > 0 && (
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell">
+        <p class="section-kicker">Prislista</p>
+        <h2>Varianter och tider</h2>
+        <div class="price-list subpage-reveal">
+          {treatment.priceOptions.map((option) => (
+            <div>
+              <strong>{option.label}</strong>
+              <span>{option.duration}</span>
+              <b>{option.price}</b>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<section class="subpage-section editorial-columns">
+  <div class="subpage-shell">
+    <div class="subpage-reveal">
+      <p class="section-kicker">Så går det till</p>
+      <h2>Behandlingen steg för steg</h2>
+      <ol>
+        {treatment.process.map((item) => <li>{item}</li>)}
+      </ol>
+    </div>
+    <div class="subpage-reveal">
+      <h3>Inför besöket</h3>
+      <ul>
+        {treatment.beforeCare.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    <div class="subpage-reveal">
+      <h3>Efter behandlingen</h3>
+      <ul>
+        {treatment.afterCare.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="subpage-shell">
+  <FAQBlock items={treatment.faq} title={`Frågor om ${treatment.title}`} />
+</div>
+
+{
+  relatedTreatments.length > 0 && (
+    <section class="subpage-section">
+      <div class="subpage-shell">
+        <p class="section-kicker">Relaterat</p>
+        <h2>Fler behandlingar</h2>
+        <div class="treatment-grid">
+          {relatedTreatments.map((related) => (
+            <TreatmentCard item={related} href={`/behandlingar/${related.slug}/`} mode="compact" />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<div class="subpage-shell">
+  <BookingCTA dark image={treatment.image} />
+</div>

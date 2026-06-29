@@ -1,0 +1,87 @@
+---
+import BookingCTA from "../../components/BookingCTA.astro";
+import FAQBlock from "../../components/FAQBlock.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import SubpageHero from "../../components/SubpageHero.astro";
+import TreatmentCard from "../../components/TreatmentCard.astro";
+import { site } from "../../data/site";
+import { publishedCategories, publishedTreatments } from "../../data/treatments";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const featuredTreatments = publishedTreatments.slice(0, 6);
+const faq = [
+  {
+    question: "Vilken behandling ska jag välja?",
+    answer:
+      "Börja med kategori och mål. Vid osäkerhet rekommenderas konsultation så att kliniken kan bedöma hud, anatomi och förväntningar."
+  },
+  {
+    question: "Kan jag boka direkt online?",
+    answer:
+      "Ja, du kan boka behandling via Bokadirekt. Vissa behandlingar kan kräva rådgivning eller individuell bedömning före utförande."
+  }
+];
+---
+
+<BaseLayout
+  title="Behandlingar i Borås | PNK Beauty Klinik"
+  description="Utforska behandlingar hos PNK Beauty Klinik i Borås: Botox, fillers, hudvård, ansiktsbehandlingar, Plasma Pen, fransar, bryn, naglar och makeup."
+  canonicalPath="/behandlingar/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Behandlingar"
+      title="Skönhetsbehandlingar i Borås"
+      copy="PNK Beauty Klinik samlar injektioner, hudvård och skönhetsbehandlingar i en varm men noggrann klinikmiljö."
+      image="/images/pnk/hero.jpeg"
+      actions={[
+        { label: "Boka via Bokadirekt", href: site.bookingUrl, external: true },
+        { label: "Se kategorier", href: "#kategorier", variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section" id="kategorier">
+      <div class="subpage-shell">
+        <p class="section-kicker">Kategorier</p>
+        <h2>Välj väg in i behandlingsmenyn</h2>
+        <p>
+          Utforska klinikens behandlingsområden och gå vidare till priser,
+          behandlingstid och eftervård för varje behandling.
+        </p>
+        <div class="treatment-grid">
+          {
+            publishedCategories.map((category) => (
+              <TreatmentCard item={category} href={`/behandlingar/${category.slug}/`} />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell">
+        <p class="section-kicker">Utvalda behandlingar</p>
+        <h2>Populära val hos PNK Beauty</h2>
+        <div class="treatment-grid">
+          {
+            featuredTreatments.map((treatment) => (
+              <TreatmentCard item={treatment} href={`/behandlingar/${treatment.slug}/`} mode="compact" />
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <FAQBlock items={faq} />
+      <BookingCTA dark />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../../scripts/motion";
+  </script>
+</BaseLayout>

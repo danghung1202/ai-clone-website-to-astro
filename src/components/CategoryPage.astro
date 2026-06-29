@@ -1,0 +1,48 @@
+---
+import type { Treatment, TreatmentCategory } from "../data/treatments";
+import { site } from "../data/site";
+import BookingCTA from "./BookingCTA.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import FAQBlock from "./FAQBlock.astro";
+import SubpageHero from "./SubpageHero.astro";
+import TreatmentCard from "./TreatmentCard.astro";
+
+interface Props {
+  category: TreatmentCategory;
+  treatments: Treatment[];
+}
+
+const { category, treatments } = Astro.props;
+---
+
+<SubpageHero
+  eyebrow={category.eyebrow}
+  title={category.title}
+  copy={category.description}
+  image={category.image}
+  actions={[
+    { label: "Boka tid", href: site.bookingUrl, external: true },
+    { label: "Se behandlingar", href: "#behandlingar", variant: "light" }
+  ]}
+/>
+<Breadcrumbs items={[{ label: "Start", href: "/" }, { label: "Behandlingar", href: "/behandlingar/" }, { label: category.title }]} />
+
+<section class="subpage-section" id="behandlingar">
+  <div class="subpage-shell">
+    <p class="section-kicker">{category.eyebrow}</p>
+    <h2>{category.summary}</h2>
+    <p>{category.description}</p>
+    <div class="treatment-grid">
+      {
+        treatments.map((treatment) => (
+          <TreatmentCard item={treatment} href={`/behandlingar/${treatment.slug}/`} />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<div class="subpage-shell">
+  <FAQBlock items={category.faq} />
+  <BookingCTA dark image={category.image} />
+</div>

@@ -1,0 +1,31 @@
+---
+import type { Treatment, TreatmentCategory } from "../data/treatments";
+
+interface Props {
+  item?: Treatment | TreatmentCategory;
+  treatment?: Treatment;
+  category?: TreatmentCategory;
+  href: string;
+  mode?: "compact" | "feature";
+}
+
+const { item, treatment, category, href, mode = "feature" } = Astro.props;
+const entry = item ?? treatment ?? category;
+
+if (!entry) {
+  throw new Error("TreatmentCard requires item, treatment, or category");
+}
+---
+
+<a
+  class:list={["treatment-card", `treatment-card-${mode}`]}
+  href={href}
+  style={`--image:url(${entry.image})`}
+>
+  <p class="treatment-card-eyebrow">{entry.eyebrow}</p>
+  <h2 class="treatment-card-title">{entry.title}</h2>
+  <p class="treatment-card-copy">{entry.summary}</p>
+  <div class="treatment-card-chips" aria-label={`${entry.title} områden`}>
+    {entry.chips.slice(0, 4).map((chip) => <span>{chip}</span>)}
+  </div>
+</a>

@@ -1,0 +1,45 @@
+---
+interface Action {
+  label: string;
+  href: string;
+  external?: boolean;
+  variant?: "light" | "dark";
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  copy: string;
+  image: string;
+  canonicalPath?: string;
+  actions?: Action[];
+}
+
+const { eyebrow, title, copy, image, actions = [] } = Astro.props;
+---
+
+<section class="subpage-hero">
+  <div class="subpage-hero-media" style={`--image:url(${image})`} aria-hidden="true"></div>
+  <div class="subpage-hero-tint" aria-hidden="true"></div>
+  <div class="subpage-hero-inner">
+    <p class="section-kicker">{eyebrow}</p>
+    <h1 class="subpage-hero-title">{title}</h1>
+    <p class="subpage-hero-copy">{copy}</p>
+    {
+      actions.length > 0 && (
+        <div class="subpage-hero-actions">
+          {actions.map((action) => (
+            <a
+              class:list={["pill-link", action.variant === "dark" && "pill-dark"]}
+              href={action.href}
+              target={action.external ? "_blank" : undefined}
+              rel={action.external ? "noreferrer" : undefined}
+            >
+              {action.label}
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</section>

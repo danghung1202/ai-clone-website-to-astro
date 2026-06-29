@@ -1,0 +1,42 @@
+---
+import ArticlePage from "../../components/ArticlePage.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import { getRelatedArticles, publishedArticles } from "../../data/articles";
+import { getPublishedTreatmentBySlug } from "../../data/treatments";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export function getStaticPaths() {
+  return publishedArticles.map((article) => ({
+    params: { slug: article.slug },
+    props: { article }
+  }));
+}
+
+const { article } = Astro.props;
+const relatedTreatments = article.relatedTreatments
+  .map((slug) => getPublishedTreatmentBySlug(slug))
+  .filter(Boolean);
+const relatedArticles = getRelatedArticles(article);
+---
+
+<BaseLayout
+  title={article.seoTitle}
+  description={article.seoDescription}
+  canonicalPath={`/artiklar/${article.slug}/`}
+  ogImage={article.image}
+>
+  <Header />
+  <main>
+    <ArticlePage
+      article={article}
+      relatedTreatments={relatedTreatments}
+      relatedArticles={relatedArticles}
+    />
+  </main>
+  <Footer />
+
+  <script>
+    import "../../scripts/motion";
+  </script>
+</BaseLayout>
