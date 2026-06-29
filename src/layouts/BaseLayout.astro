@@ -23,8 +23,25 @@ const {
 const ensureLeadingSlash = (path: string) =>
   path.startsWith("/") ? path : `/${path}`;
 
+const hasFileExtension = (path: string) => /\/[^/]+\.[^/]+$/.test(path);
+
+const normalizePath = (path: string) => {
+  const withLeadingSlash = ensureLeadingSlash(path);
+
+  if (withLeadingSlash === "/" || hasFileExtension(withLeadingSlash)) {
+    return withLeadingSlash;
+  }
+
+  return withLeadingSlash.endsWith("/")
+    ? withLeadingSlash
+    : `${withLeadingSlash}/`;
+};
+
+const serializeJsonLd = (item: Record<string, unknown>) =>
+  JSON.stringify(item).replace(/</g, "\\u003c");
+
 const canonicalUrl = new URL(
-  ensureLeadingSlash(canonicalPath ?? Astro.url.pathname),
+  normalizePath(canonicalPath ?? Astro.url.pathname),
   site.domain
 ).toString();
 
@@ -64,7 +81,7 @@ const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
       jsonLdItems.map((item) => (
         <script
           type="application/ld+json"
-          set:html={JSON.stringify(item)}
+          set:html={serializeJsonLd(item)}
         />
       ))
     }
