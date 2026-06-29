@@ -3,7 +3,7 @@ import ArticlePage from "../../components/ArticlePage.astro";
 import Footer from "../../components/Footer.astro";
 import Header from "../../components/Header.astro";
 import { getRelatedArticles, publishedArticles } from "../../data/articles";
-import { getPublishedTreatmentBySlug } from "../../data/treatments";
+import { getPublishedTreatmentBySlug, type Treatment } from "../../data/treatments";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
 export function getStaticPaths() {
@@ -14,9 +14,27 @@ export function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const relatedTreatments = article.relatedTreatments
-  .map((slug) => getPublishedTreatmentBySlug(slug))
-  .filter(Boolean);
+const relatedTreatmentEntries = article.relatedTreatments.map((slug) => ({
+  slug,
+  treatment: getPublishedTreatmentBySlug(slug)
+}));
+const missingRelatedTreatmentSlugs = relatedTreatmentEntries
+  .filter((entry) => !entry.treatment)
+  .map((entry) => entry.slug);
+
+if (missingRelatedTreatmentSlugs.length > 0) {
+  throw new Error(
+    `Article "${article.slug}" has unresolved related treatments: ${missingRelatedTreatmentSlugs.join(", ")}`
+  );
+}
+
+const hasResolvedTreatment = (
+  entry: (typeof relatedTreatmentEntries)[number]
+): entry is { slug: string; treatment: Treatment } => Boolean(entry.treatment);
+
+const relatedTreatments = relatedTreatmentEntries
+  .filter(hasResolvedTreatment)
+  .map((entry) => entry.treatment);
 const relatedArticles = getRelatedArticles(article);
 ---
 
