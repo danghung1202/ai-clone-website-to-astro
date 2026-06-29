@@ -1,4 +1,6 @@
 ---
+import { assets } from "../data/home";
+
 interface Action {
   label: string;
   href: string;
@@ -15,11 +17,13 @@ interface Props {
   actions?: Action[];
 }
 
-const { eyebrow, title, copy, image, actions = [] } = Astro.props;
+const { eyebrow, title, copy, actions = [] } = Astro.props;
 ---
 
 <section class="subpage-hero">
-  <div class="subpage-hero-media" style={`--image:url(${image})`} aria-hidden="true"></div>
+  <video class="subpage-hero-media" autoplay muted playsinline loop preload="metadata" aria-hidden="true">
+    <source src={assets.heroVideo} />
+  </video>
   <div class="subpage-hero-tint" aria-hidden="true"></div>
   <div class="subpage-hero-inner">
     <p class="section-kicker">{eyebrow}</p>

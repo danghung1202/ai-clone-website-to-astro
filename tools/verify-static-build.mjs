@@ -36,6 +36,7 @@ for (const route of expectedRoutes) {
 const builtHome = existsSync(join(dist, "index.html"))
   ? readFileSync(join(dist, "index.html"), "utf8")
   : "";
+const venetianHeroVideo = "https://venetianspa.ca/wp-content/uploads/2026/04/aea5496227e84dd317a0bf9396ae97ed.mov";
 const scannedOutputs = [];
 
 for (const route of expectedRoutes) {
@@ -68,6 +69,10 @@ check(builtHome.includes("PNK Beauty Klinik"), "Home HTML should contain PNK Bea
 check(builtHome.includes("Bokadirekt"), "Home HTML should contain Bokadirekt booking copy");
 check(builtHome.includes("application/ld+json"), "Home HTML should contain structured data");
 check(builtHome.includes("\"@type\":\"LocalBusiness\""), "Home structured data should include LocalBusiness");
+
+const homeHeroVideoTag = builtHome.match(/<video class="hero-video"[^>]*>/)?.[0] ?? "";
+check(homeHeroVideoTag.includes("hero-video"), "Home should render hero video media");
+check(!homeHeroVideoTag.includes("poster="), "Home hero video should not use the old PNK banner as poster media");
 
 const pageChecks = [
   {
@@ -108,6 +113,17 @@ for (const { route, expected } of pageChecks) {
   for (const text of expected) {
     check(html.includes(text), `${route} should contain verified Bokadirekt value: ${text}`);
   }
+}
+
+for (const route of expectedRoutes) {
+  const file = routeToFile(route);
+  if (!existsSync(file)) continue;
+  const html = readFileSync(file, "utf8");
+  if (!html.includes("subpage-hero")) continue;
+  const subpageHeroVideoTag = html.match(/<video class="subpage-hero-media"[^>]*>/)?.[0] ?? "";
+  check(html.includes('<video class="subpage-hero-media"'), `${route} should render the subpage hero as video media`);
+  check(!subpageHeroVideoTag.includes("poster="), `${route} should not use the old PNK banner or treatment image as poster media`);
+  check(html.includes(venetianHeroVideo), `${route} should use the Venetian hero video`);
 }
 
 if (failures.length) {

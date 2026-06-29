@@ -246,7 +246,7 @@ p {
 }
 
 .hero-video {
-  height: 100vh;
+  height: 100svh;
   object-fit: cover;
   object-position: center 52%;
   z-index: 0;
@@ -256,6 +256,7 @@ p {
   background:
     radial-gradient(circle at 72% 42%, rgba(200, 154, 44, 0.12), transparent 34%),
     linear-gradient(90deg, rgba(5, 5, 5, 0.82), rgba(5, 5, 5, 0.34) 48%, rgba(5, 5, 5, 0.55));
+  height: 100svh;
   pointer-events: none;
   z-index: 1;
 }
@@ -1428,7 +1429,7 @@ p {
 .subpage-hero {
   background: var(--black);
   color: var(--white);
-  min-height: min(760px, 92vh);
+  min-height: clamp(620px, 92svh, 760px);
   overflow: hidden;
   position: relative;
 }
@@ -1440,9 +1441,15 @@ p {
 }
 
 .subpage-hero-media {
-  background: var(--image) center / cover no-repeat;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   opacity: 0.78;
+  pointer-events: none;
   transform: scale(1.02);
+  width: 100%;
+  z-index: 0;
 }
 
 .subpage-hero-tint {
@@ -1458,7 +1465,7 @@ p {
   flex-direction: column;
   justify-content: center;
   margin: 0 auto;
-  min-height: min(760px, 92vh);
+  min-height: clamp(620px, 92svh, 760px);
   max-width: var(--max);
   padding: 132px 24px 84px;
   position: relative;
@@ -1983,11 +1990,11 @@ address.utility-panel {
 
 @media (max-width: 767px) {
   .subpage-hero {
-    min-height: 680px;
+    min-height: clamp(560px, 100svh, 680px);
   }
 
   .subpage-hero-inner {
-    min-height: 680px;
+    min-height: clamp(560px, 100svh, 680px);
     padding: 116px 20px 58px;
   }
 
