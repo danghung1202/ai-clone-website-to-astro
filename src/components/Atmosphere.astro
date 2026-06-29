@@ -1,0 +1,30 @@
+---
+import { assets, atmosphereImages, galleryImages } from "../data/home";
+---
+
+<section class="atmosphere-section home-scroll-container section-reveal">
+  <div class="atmosphere-copy">
+    <img src={assets.verticalIcons} width="71" height="134" alt="" />
+    <h2 class="home-scroll-h2">TRYGGHET I VARJE<br />BEHANDLING.</h2>
+    <p class="home-scroll-p">
+      Varje behandling börjar med förståelse för dina mål, din hud och dina förutsättningar. Hos PNK Beauty får du
+      tydlig rådgivning, professionellt utförande och ett resultat som ska kännas naturligt.
+    </p>
+  </div>
+
+  <div class="floating-gallery" aria-label="Atmosphere images">
+    {atmosphereImages.map((image, index) => (
+      <figure class={`move-up-img move-up-img-${index + 1}`}>
+        <img src={image} width="467" height="635" alt="" />
+      </figure>
+    ))}
+  </div>
+
+  <figure class="large-bg-icon" aria-hidden="true">
+    <img src={assets.largeIcon} width="800" height="642" alt="" />
+  </figure>
+
+  <div class="gallery-ribbon" aria-label="Gallery">
+    {galleryImages.map((image) => <img src={image} width="300" height="300" alt="" />)}
+  </div>
+</section>

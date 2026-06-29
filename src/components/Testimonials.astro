@@ -1,0 +1,24 @@
+---
+import { assets, testimonials } from "../data/home";
+---
+
+<section class="testimonial-section testimonial-container section-reveal">
+  <img class="testimonial-bg testimonial-bg-icon" src={assets.largeIcon} width="800" height="642" alt="" />
+  <div class="testimonial-heading-wrap">
+    <div class="testimonial-heading testimonial-h2">
+      <h2>4,8 AV 5<br />PÅ BOKADIREKT<br />I BORÅS</h2>
+    </div>
+    <img class="testimonial-icon" src={assets.verticalIcons} width="71" height="134" alt="" />
+  </div>
+
+  <div class="testimonial-stage">
+    {testimonials.map((item) => (
+      <div class="testimonial-wrapper">
+        <article class="testimonial-card">
+          <h3>{item.name}</h3>
+          <p>&quot;{item.quote}&quot;</p>
+        </article>
+      </div>
+    ))}
+  </div>
+</section>

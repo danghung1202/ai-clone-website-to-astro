@@ -1,0 +1,35 @@
+---
+import { assets, bookingUrl } from "../data/home";
+
+const strips = Array.from({ length: 52 }, (_, index) => index);
+---
+
+<section class="hero home-hero-container" data-hero>
+  <video class="hero-video" autoplay muted playsinline loop preload="metadata" poster={assets.heroImage}>
+    <source src={assets.heroVideo} />
+  </video>
+  <div class="hero-tint"></div>
+  <div class="hero-cover home-hero-cover" aria-hidden="true">
+    {strips.map((index) => <span class="hero-strip blind-strip-v" style={`--strip-index:${index}`}></span>)}
+  </div>
+
+  <div class="hero-inner hero-heading">
+    <h1>
+      <span class="hero-title-desktop">SKÖNHETSKLINIK I BORÅS<br />MED 20 ÅRS ERFARENHET</span>
+      <span class="hero-title-mobile">SKÖNHETSKLINIK<br />I BORÅS<br />MED 20 ÅRS<br />ERFARENHET</span>
+    </h1>
+    <p class="hero-copy">
+      Botox, fillers, ansiktsbehandlingar och skönhetsbehandlingar hos PNK Beauty Klinik. Injektioner utförs
+      av specialistsjuksköterska med över 20 års erfarenhet, hudvård och makeup av auktoriserad hudterapeut.
+    </p>
+    <div class="hero-actions">
+      <a class="pill-link hero-cta hero-button" href={bookingUrl} target="_blank" rel="noreferrer">Boka konsultation</a>
+      <a class="pill-link hero-cta hero-button-secondary" href="#behandlingar">Se behandlingar</a>
+    </div>
+  </div>
+
+  <a class="award-badge" href={bookingUrl} target="_blank" rel="noreferrer" aria-label="Boka tid hos PNK Beauty Klinik">
+    <strong>20+</strong>
+    <span>års erfarenhet</span>
+  </a>
+</section>
