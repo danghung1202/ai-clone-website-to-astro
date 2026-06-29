@@ -1,0 +1,51 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Integritetspolicy | PNK Beauty Klinik"
+  description="Kort integritetspolicy för PNK Beauty Klinik och hur kontaktuppgifter hanteras vid kontakt och bokning."
+  canonicalPath="/integritetspolicy/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Integritet"
+      title="Integritetspolicy"
+      copy="Här beskriver vi kort hur PNK Beauty Klinik hanterar kontaktuppgifter och externa bokningslänkar."
+      image="/images/pnk/treatment-room.jpg"
+    />
+
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell utility-legal">
+        <p class="section-kicker">Personuppgifter</p>
+        <h2>Kontakt och bokning</h2>
+        <p>
+          När du kontaktar PNK Beauty Klinik via telefon eller e-post kan vi
+          behandla de uppgifter du själv lämnar, till exempel namn,
+          kontaktuppgifter och din fråga, för att kunna återkomma till dig.
+        </p>
+        <p>
+          Bokning sker via extern tjänst hos Bokadirekt. När du följer en
+          bokningslänk gäller Bokadirekts egna villkor och integritetspolicy för
+          uppgifter som lämnas i deras system.
+        </p>
+        <p>
+          Uppgifter används inte för andra ändamål än att hantera kontakt,
+          bokning och kundrelation. Du kan kontakta kliniken på
+          <a href={`mailto:${site.email}`}>{site.email}</a> om du har frågor om
+          dina uppgifter.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>

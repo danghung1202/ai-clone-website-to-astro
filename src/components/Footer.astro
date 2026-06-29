@@ -1,0 +1,41 @@
+---
+import { assets } from "../data/home";
+import { footerGroups } from "../data/navigation";
+import { site } from "../data/site";
+---
+
+<footer class="site-footer">
+  <div class="site-footer-brand">
+    <img src={assets.logoWhite} width="136" height="63" alt="PNK Beauty Klinik" />
+    <p>
+      Skönhetsklinik i Borås med injektioner, hudvård och behandlingar med fokus på naturliga resultat.
+    </p>
+  </div>
+
+  <div class="site-footer-groups">
+    {
+      footerGroups.map((group) => (
+        <nav aria-label={group.title}>
+          <h2>{group.title}</h2>
+          {group.links.map((item) => (
+            <a
+              href={item.href}
+              target={item.external ? "_blank" : undefined}
+              rel={item.external ? "noreferrer" : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      ))
+    }
+  </div>
+
+  <address class="site-footer-contact">
+    <strong>{site.name}</strong>
+    <span>{site.address.street}</span>
+    <span>{site.address.postalCode} {site.address.city}</span>
+    <a href={`tel:${site.phoneMachine}`}>{site.phone}</a>
+    <a href={`mailto:${site.email}`}>{site.email}</a>
+  </address>
+</footer>

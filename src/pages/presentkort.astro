@@ -1,0 +1,57 @@
+---
+import BookingCTA from "../components/BookingCTA.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Presentkort | PNK Beauty Klinik"
+  description="Ge bort ett personligt presentkort för behandling, konsultation eller egen tid hos PNK Beauty Klinik i Borås."
+  canonicalPath="/presentkort/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Presentkort"
+      title="En personlig gåva för egen tid"
+      copy="Ett presentkort kan bli en behandling, konsultation eller en lugn stund med hudvård och omtanke."
+      image="/images/pnk/services/gift-card.webp"
+      actions={[
+        { label: "Kontakta kliniken", href: "/kontakt/" },
+        { label: "Boka via Bokadirekt", href: site.bookingUrl, external: true, variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell utility-split">
+        <div>
+          <p class="section-kicker">Gåva</p>
+          <h2>För behandling, konsultation eller self-care</h2>
+          <p>
+            Presentkort passar när du vill ge bort något personligt men låta
+            mottagaren själv välja behandling och tid tillsammans med kliniken.
+          </p>
+        </div>
+        <div class="utility-panel">
+          <h3>Så går du vidare</h3>
+          <p>
+            Kontakta PNK Beauty Klinik för aktuella möjligheter kring
+            presentkort, belopp och hur mottagaren bokar sin tid.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <BookingCTA dark title="Vill du ge bort en behandling?" copy="Kontakta kliniken eller boka rådgivning via Bokadirekt om du vill välja rätt gåva." />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>

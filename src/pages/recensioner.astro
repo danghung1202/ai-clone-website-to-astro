@@ -1,0 +1,59 @@
+---
+import BookingCTA from "../components/BookingCTA.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { testimonials } from "../data/home";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Recensioner | PNK Beauty Klinik"
+  description="Läs kundomdömen för PNK Beauty Klinik i Borås. Betyget visas med Bokadirekt som källa."
+  canonicalPath="/recensioner/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Recensioner"
+      title="Omdömen från kunder"
+      copy={`PNK Beauty Klinik har ${site.rating.value} i betyg med Bokadirekt som källa.`}
+      image="/images/pnk/hero.jpeg"
+      actions={[
+        { label: "Boka via Bokadirekt", href: site.bookingUrl, external: true },
+        { label: "Se omdömen", href: "#omdomen", variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section subpage-section-cream" id="omdomen">
+      <div class="subpage-shell">
+        <p class="section-kicker">{site.rating.source}</p>
+        <h2>{site.rating.value} i betyg</h2>
+        <p>
+          Betygskällan är Bokadirekt. Omdömena nedan är utvalda citat från
+          klinikens kundrespons, utan att lägga till något eget antal recensioner.
+        </p>
+        <div class="utility-review-grid">
+          {
+            testimonials.map((testimonial) => (
+              <article class="utility-panel subpage-reveal">
+                <p>"{testimonial.quote}"</p>
+                <h3>{testimonial.name}</h3>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <BookingCTA dark />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>

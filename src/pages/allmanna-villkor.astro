@@ -1,0 +1,54 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Allmänna villkor | PNK Beauty Klinik"
+  description="Kort information om bokningsvillkor, priser och behandlingar hos PNK Beauty Klinik."
+  canonicalPath="/allmanna-villkor/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Villkor"
+      title="Allmänna villkor"
+      copy="Kort information om bokning, priser och vad som gäller inför behandling hos PNK Beauty Klinik."
+      image="/images/pnk/clinic-reception.jpg"
+    />
+
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell utility-legal">
+        <p class="section-kicker">Bokning</p>
+        <h2>Villkor och bokningsinformation</h2>
+        <p>
+          Bokningar görs i första hand via Bokadirekt. Bokadirekt bekräftar
+          aktuell tid, behandling och de bokningsdetaljer som gäller för din
+          bokning.
+        </p>
+        <p>
+          Priser på webbplatsen är en översikt och kan ändras. Aktuellt pris
+          och behandlingstid framgår vid bokning eller efter individuell
+          bedömning hos kliniken.
+        </p>
+        <p>
+          Vissa behandlingar kan kräva konsultation eller att behandlaren gör en
+          medicinsk och estetisk bedömning innan behandling genomförs.
+        </p>
+        <p>
+          Vid frågor om ombokning, avbokning eller behandling kontaktar du
+          kliniken via <a href={`mailto:${site.email}`}>{site.email}</a> eller
+          <a href={`tel:${site.phoneMachine}`}>{site.phone}</a>.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>

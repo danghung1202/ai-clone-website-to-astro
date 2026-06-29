@@ -1,0 +1,48 @@
+---
+import { site } from "../data/site";
+---
+
+<section class="contact-section home-cta-container section-reveal" id="kontakt">
+  <div class="contact-copy">
+    <div class="cta-h2">
+      <h2>BOKA DIN<br />KONSULTATION</h2>
+    </div>
+    <p class="cta-p">
+      Vill du veta vilken behandling som passar dig bäst? Boka en konsultation hos PNK Beauty Klinik i Borås.
+      Bokadirekt visar lediga tider, och du kan även kontakta kliniken på {site.phone} eller {site.email}.
+    </p>
+    <a class="pill-link pill-dark" href={site.bookingUrl} target="_blank" rel="noreferrer">Boka via Bokadirekt</a>
+  </div>
+
+  <form class="contact-form home-cta-form">
+    <label class="elementor-field-group">
+      <span>Namn</span>
+      <input type="text" name="name" autocomplete="name" />
+    </label>
+    <label class="elementor-field-group">
+      <span>E-post</span>
+      <input type="email" name="email" autocomplete="email" />
+    </label>
+    <label class="elementor-field-group">
+      <span>Behandling</span>
+      <select name="service">
+        <option value="">Välj behandling</option>
+        <option>Botox</option>
+        <option>Fillers</option>
+        <option>Ansiktsbehandling</option>
+        <option>Microneedling</option>
+        <option>Kemisk peeling</option>
+        <option>Lashlift</option>
+        <option>Naglar eller pedikyr</option>
+        <option>Annat</option>
+      </select>
+    </label>
+    <label class="elementor-field-group">
+      <span>Meddelande</span>
+      <textarea name="message" rows="4"></textarea>
+    </label>
+    <div class="elementor-field-group">
+      <button class="pill-link pill-dark" type="submit">Skicka förfrågan</button>
+    </div>
+  </form>
+</section>

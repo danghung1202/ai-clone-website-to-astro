@@ -1,0 +1,29 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Sidan hittades inte | PNK Beauty Klinik"
+  description="Sidan du söker kunde inte hittas. Gå vidare till behandlingar eller boka tid hos PNK Beauty Klinik."
+  canonicalPath="/404/"
+  noindex
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="404"
+      title="Sidan hittades inte"
+      copy="Länken kan ha flyttats eller tagits bort. Fortsätt till behandlingar eller boka din tid via Bokadirekt."
+      image="/images/pnk/hero.jpeg"
+      actions={[
+        { label: "Se behandlingar", href: "/behandlingar/" },
+        { label: "Boka tid", href: site.bookingUrl, external: true, variant: "light" }
+      ]}
+    />
+  </main>
+  <Footer />
+</BaseLayout>

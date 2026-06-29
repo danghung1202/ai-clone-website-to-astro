@@ -1,0 +1,75 @@
+---
+import BookingCTA from "../components/BookingCTA.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { site } from "../data/site";
+import { publishedCategories, publishedTreatments } from "../data/treatments";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const priceGroups = publishedCategories
+  .map((category) => ({
+    category,
+    treatments: publishedTreatments.filter(
+      (treatment) => treatment.category === category.slug
+    )
+  }))
+  .filter((group) => group.treatments.length > 0);
+---
+
+<BaseLayout
+  title="Priser | PNK Beauty Klinik"
+  description="Se prisöversikt för behandlingar hos PNK Beauty Klinik i Borås. Priser visas per kategori med behandlingstid och länk till mer information."
+  canonicalPath="/priser/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Priser"
+      title="Prisöversikt för behandlingar"
+      copy="Här hittar du frånpriser och ungefärlig behandlingstid för publicerade behandlingar hos PNK Beauty Klinik i Borås."
+      image="/images/pnk/treatment-room.jpg"
+      actions={[
+        { label: "Boka via Bokadirekt", href: site.bookingUrl, external: true },
+        { label: "Se priser", href: "#prislista", variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section subpage-section-cream" id="prislista">
+      <div class="subpage-shell">
+        <p class="section-kicker">Behandlingsmeny</p>
+        <h2>Priser per kategori</h2>
+        <p>
+          Bokadirekt bekräftar aktuell behandling, tid och pris när du bokar.
+          Vid osäkerhet rekommenderas konsultation innan du väljer behandling.
+        </p>
+        {
+          priceGroups.map(({ category, treatments }) => (
+            <section class="utility-panel subpage-reveal" aria-labelledby={`prices-${category.slug}`}>
+              <h3 id={`prices-${category.slug}`}>{category.title}</h3>
+              <div class="price-list">
+                {treatments.map((treatment) => (
+                  <div>
+                    <strong>{treatment.title}</strong>
+                    <span>{treatment.duration}</span>
+                    <b>{treatment.priceFrom}</b>
+                    <a href={`/behandlingar/${treatment.slug}/`}>Läs mer</a>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <BookingCTA dark />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>

@@ -1,0 +1,76 @@
+---
+import BookingCTA from "../components/BookingCTA.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { assets } from "../data/home";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const people = [
+  {
+    name: "Siamak Ghazanfari",
+    role: "Injektioner, Botox och fillers",
+    image: assets.siamak,
+    copy:
+      "Siamak arbetar med konsultation och injektionsbehandlingar som Botox och fillers med fokus på medicinsk bedömning, proportion och naturliga resultat."
+  },
+  {
+    name: "Shadi",
+    role: "Auktoriserad hudterapeut och pro makeup artist",
+    image: assets.shadi,
+    copy:
+      "Shadi arbetar med hudvård, ansiktsbehandlingar och professionell makeup med känsla för hudens behov, lyster och personlig helhet."
+  }
+];
+---
+
+<BaseLayout
+  title="Personal | PNK Beauty Klinik"
+  description="Möt Siamak och Shadi på PNK Beauty Klinik i Borås."
+  canonicalPath="/personal/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Personal"
+      title="Möt behandlarna på PNK Beauty"
+      copy="Två kompetenser möts i kliniken: injektionsbehandlingar, hudvård och makeup med individuell rådgivning."
+      image="/images/pnk/consulting.jpg"
+      actions={[
+        { label: "Boka via Bokadirekt", href: site.bookingUrl, external: true },
+        { label: "Kontakta kliniken", href: "/kontakt/", variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell">
+        <p class="section-kicker">Teamet</p>
+        <h2>Kompetens för hud, form och uttryck</h2>
+        <div class="utility-profile-grid">
+          {
+            people.map((person) => (
+              <article class="utility-profile subpage-reveal">
+                <img src={person.image} alt={person.name} loading="lazy" />
+                <div>
+                  <p class="article-card-eyebrow">{person.role}</p>
+                  <h3>{person.name}</h3>
+                  <p>{person.copy}</p>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <BookingCTA dark />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>

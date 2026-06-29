@@ -1,0 +1,65 @@
+---
+import BookingCTA from "../components/BookingCTA.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Om kliniken | PNK Beauty Klinik"
+  description="Lär känna PNK Beauty Klinik i Borås på Brämhultsvägen 4, med medicinsk och estetisk kompetens och fokus på naturliga resultat."
+  canonicalPath="/om-kliniken/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Om kliniken"
+      title="PNK Beauty Klinik i Borås"
+      copy="På Brämhultsvägen 4 möts medicinsk och estetisk kompetens i en klinik där rådgivning, noggrannhet och naturliga resultat står i centrum."
+      image="/images/pnk/clinic-reception.jpg"
+      actions={[
+        { label: "Boka konsultation", href: site.bookingUrl, external: true },
+        { label: "Möt personalen", href: "/personal/", variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section subpage-section-cream editorial-columns">
+      <div class="subpage-shell">
+        <div>
+          <p class="section-kicker">Borås</p>
+          <h2>En personlig klinik med tydlig rådgivning</h2>
+          <p>
+            PNK Beauty Klinik arbetar med injektioner, hudvård och estetiska
+            behandlingar utifrån varje persons förutsättningar. Målet är
+            behandlingar som känns genomtänkta, trygga och naturliga.
+          </p>
+        </div>
+        <div class="utility-panel">
+          <h3>Plats</h3>
+          <p>
+            {site.address.street}<br />
+            {site.address.postalCode} {site.address.city}
+          </p>
+        </div>
+        <div class="utility-panel">
+          <h3>Fokus</h3>
+          <p>
+            Medicinsk noggrannhet, estetisk känsla, hudkompetens och resultat
+            som respekterar ansiktets balans.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <BookingCTA dark />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>

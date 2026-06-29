@@ -953,29 +953,61 @@ p {
 }
 
 .site-footer {
-  align-items: center;
+  align-items: start;
   background: #050505;
   color: rgba(255, 250, 242, 0.78);
   display: grid;
-  gap: 28px;
-  grid-template-columns: auto 1fr auto;
-  padding: 38px max(24px, calc((100vw - var(--max)) / 2));
+  gap: 42px;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.6fr) minmax(220px, 0.8fr);
+  padding: 54px max(24px, calc((100vw - var(--max)) / 2));
 }
 
 .site-footer img {
   width: 116px;
 }
 
-.site-footer nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px 28px;
-  justify-content: center;
+.site-footer-brand p,
+.site-footer-contact,
+.site-footer-contact a {
+  color: rgba(255, 250, 242, 0.72);
+  font-size: 13px;
+  line-height: 1.65;
 }
 
-.site-footer p {
-  font-size: 12px;
-  max-width: 260px;
+.site-footer-brand p {
+  margin-top: 18px;
+  max-width: 290px;
+}
+
+.site-footer-groups {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.site-footer nav {
+  display: grid;
+  gap: 10px;
+}
+
+.site-footer h2,
+.site-footer-contact strong {
+  color: var(--gold);
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.site-footer nav a {
+  color: rgba(255, 250, 242, 0.74);
+  font-size: 13px;
+}
+
+.site-footer-contact {
+  display: grid;
+  font-style: normal;
+  gap: 6px;
 }
 
 .section-reveal {
@@ -1369,8 +1401,13 @@ p {
   }
 
   .site-footer img,
-  .site-footer p {
+  .site-footer p,
+  .site-footer-contact {
     justify-self: center;
+  }
+
+  .site-footer-groups {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1696,7 +1733,7 @@ p {
   background: rgba(255, 250, 242, 0.72);
   display: grid;
   gap: 16px;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
   padding: 18px 22px;
 }
 
@@ -1711,6 +1748,102 @@ p {
 .price-list span {
   color: var(--muted);
   font-size: 13px;
+}
+
+.price-list a {
+  color: var(--gold);
+  font-family: var(--display);
+  font-size: 18px;
+}
+
+.utility-panel {
+  background: rgba(255, 250, 242, 0.72);
+  border: 1px solid rgba(200, 154, 44, 0.18);
+  padding: clamp(24px, 3vw, 36px);
+}
+
+.utility-panel h3,
+.utility-profile h3 {
+  color: var(--gold);
+  font-family: var(--display);
+  font-size: clamp(30px, 3vw, 44px);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.utility-panel p,
+.utility-panel span,
+.utility-panel a,
+.utility-profile p,
+.utility-legal p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.utility-panel a,
+.utility-legal a {
+  color: var(--gold);
+}
+
+.utility-action {
+  margin-top: 24px;
+}
+
+.utility-split,
+.utility-contact-grid {
+  align-items: start;
+  display: grid;
+  gap: 42px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+}
+
+.utility-contact-grid address,
+.utility-panel address,
+address.utility-panel {
+  display: grid;
+  font-style: normal;
+  gap: 8px;
+}
+
+.utility-profile-grid,
+.utility-review-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 42px;
+}
+
+.utility-review-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.utility-profile {
+  background: var(--white);
+  border: 1px solid rgba(200, 154, 44, 0.18);
+  display: grid;
+  grid-template-columns: minmax(180px, 0.75fr) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.utility-profile img {
+  height: 100%;
+  min-height: 420px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.utility-profile > div {
+  align-self: center;
+  padding: clamp(28px, 4vw, 48px);
+}
+
+.utility-legal {
+  max-width: 860px;
+}
+
+.utility-legal p + p {
+  margin-top: 20px;
 }
 
 .editorial-columns .subpage-shell {
@@ -1834,12 +1967,16 @@ p {
 @media (max-width: 1024px) {
   .treatment-grid,
   .article-grid,
-  .editorial-columns .subpage-shell {
+  .editorial-columns .subpage-shell,
+  .utility-review-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .treatment-detail-grid,
-  .booking-cta {
+  .booking-cta,
+  .utility-split,
+  .utility-contact-grid,
+  .utility-profile {
     grid-template-columns: 1fr;
   }
 }
@@ -1876,7 +2013,9 @@ p {
 
   .treatment-grid,
   .article-grid,
-  .editorial-columns .subpage-shell {
+  .editorial-columns .subpage-shell,
+  .utility-profile-grid,
+  .utility-review-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1894,6 +2033,10 @@ p {
   .price-list div {
     align-items: start;
     grid-template-columns: 1fr;
+  }
+
+  .utility-profile img {
+    min-height: 340px;
   }
 
   .booking-cta-copy {

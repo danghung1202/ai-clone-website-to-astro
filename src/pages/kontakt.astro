@@ -1,0 +1,60 @@
+---
+import BookingCTA from "../components/BookingCTA.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import SubpageHero from "../components/SubpageHero.astro";
+import { site } from "../data/site";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Kontakt | PNK Beauty Klinik"
+  description="Kontakta PNK Beauty Klinik i Borås. Adress, telefon, e-post och bokning via Bokadirekt."
+  canonicalPath="/kontakt/"
+>
+  <Header />
+  <main>
+    <SubpageHero
+      eyebrow="Kontakt"
+      title="Kontakta PNK Beauty Klinik"
+      copy={`Besök kliniken på ${site.address.street} i ${site.address.city}, eller boka din tid direkt via Bokadirekt.`}
+      image="/images/pnk/clinic-reception.jpg"
+      actions={[
+        { label: "Boka via Bokadirekt", href: site.bookingUrl, external: true },
+        { label: "Ring kliniken", href: `tel:${site.phoneMachine}`, variant: "light" }
+      ]}
+    />
+
+    <section class="subpage-section subpage-section-cream">
+      <div class="subpage-shell utility-contact-grid">
+        <div>
+          <p class="section-kicker">Kontaktuppgifter</p>
+          <h2>Adress, telefon och e-post</h2>
+          <p>
+            Hör av dig om du har frågor inför bokning eller vill börja med en
+            konsultation.
+          </p>
+        </div>
+        <address class="utility-panel">
+          <h3>{site.name}</h3>
+          <span>{site.address.street}</span>
+          <span>{site.address.postalCode} {site.address.city}</span>
+          <a href={`tel:${site.phoneMachine}`}>{site.phone}</a>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <a class="pill-link pill-dark utility-action" href={site.bookingUrl} target="_blank" rel="noreferrer">
+            Boka via Bokadirekt
+          </a>
+        </address>
+      </div>
+    </section>
+
+    <div class="subpage-shell">
+      <BookingCTA dark />
+    </div>
+  </main>
+  <Footer />
+
+  <script>
+    import "../scripts/motion";
+  </script>
+</BaseLayout>
