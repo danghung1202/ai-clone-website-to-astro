@@ -31,8 +31,8 @@ export const services = [
     backgroundSize: "cover",
     href: "/behandlingar/injektioner-boras/",
     image: `${pnkImages}/services/injections.webp`,
-    copy: "Botox, fillers, trådlyft, PRP, Prophilo och fettreducering utförs med tydlig konsultation och fokus på naturliga resultat.",
-    chips: ["Botox", "Fillers", "Trådlyft", "PRP", "Fettreducering"]
+    copy: "Botox, fillers, Prophilo och konsultation utförs med tydlig rådgivning och fokus på naturliga resultat.",
+    chips: ["Botox", "Fillers", "Prophilo", "Konsultation"]
   },
   {
     title: "BOTOX BORÅS",
@@ -62,7 +62,7 @@ export const services = [
     eyebrow: "Hudterapeut i Borås",
     backgroundPosition: "50% 48%",
     backgroundSize: "cover",
-    href: "/behandlingar/ansiktsbehandling-boras/",
+    href: "/behandlingar/ansiktsbehandlingar-boras/",
     image: `${pnkImages}/services/facial.webp`,
     copy: "Klassiska och avancerade ansiktsbehandlingar för hud som behöver lyster, återfuktning, rengöring eller struktur.",
     chips: ["Ansiktsbehandling", "Marina Miracles", "Pure Cell", "Microdermabrasion"]
@@ -106,10 +106,10 @@ export const services = [
     eyebrow: "Manikyr och pedikyr",
     backgroundPosition: "50% 45%",
     backgroundSize: "cover",
-    href: "/behandlingar/pedikyr-manikyr-boras/",
+    href: "/behandlingar/naglar-fotter-boras/",
     image: `${pnkImages}/services/nails-feet.webp`,
     copy: "Manikyr, pedikyr och nagelvård med samma noggranna känsla som resten av klinikens behandlingar.",
-    chips: ["Manikyr", "Pedikyr", "Gelnaglar", "Nagellack"]
+    chips: ["Manikyr", "Pedikyr", "Nagelvård"]
   },
   {
     title: "FRANSAR & BRYN",
@@ -119,8 +119,8 @@ export const services = [
     backgroundSize: "cover",
     href: "/behandlingar/lashlift-boras/",
     image: `${pnkImages}/services/lashes-brows.webp`,
-    copy: "Lashlift, fransar och bryn för ett piggare intryck utan att känslan blir överarbetad.",
-    chips: ["Lashlift", "Fransar", "Bryn", "Keratin"]
+    copy: "Lashlift och keratinvård för ett piggare intryck utan att känslan blir överarbetad.",
+    chips: ["Lashlift", "Keratin", "Fransar"]
   },
   {
     title: "MAKEUP & EVENT",

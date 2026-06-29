@@ -833,8 +833,16 @@ export function getCategoryBySlug(slug: string) {
   return categories.find((category) => category.slug === slug);
 }
 
+export function getPublishedCategoryBySlug(slug: string) {
+  return publishedCategories.find((category) => category.slug === slug);
+}
+
 export function getTreatmentBySlug(slug: string) {
   return treatments.find((treatment) => treatment.slug === slug);
+}
+
+export function getPublishedTreatmentBySlug(slug: string) {
+  return publishedTreatments.find((treatment) => treatment.slug === slug);
 }
 
 export function getTreatmentsByCategory(categorySlug: string) {

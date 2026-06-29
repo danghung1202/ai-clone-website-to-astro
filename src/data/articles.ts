@@ -206,7 +206,10 @@ export const articles: Article[] = [
     summary: "Läkning och hudvård efter en Plasma Pen-behandling.",
     image: "/images/pnk/services/plasma-pen.webp",
     category: "Plasma Pen",
-    relatedTreatments: ["plasma-pen-boras", "plasma-pen-ogonlockslyft-boras"],
+    relatedTreatments: [
+      "plasma-pen-ogonlockslyft-boras",
+      "plasma-pen-hudflikar-pigment-boras"
+    ],
     seoTitle: "Plasma Pen eftervård - så tar du hand om huden",
     seoDescription:
       "Eftervårdsråd efter Plasma Pen: rengöring, solskydd, skorpor, läkning och när du bör kontakta kliniken.",
