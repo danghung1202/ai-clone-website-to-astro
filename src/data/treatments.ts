@@ -545,30 +545,6 @@ export const treatments: Treatment[] = [
     seoDescription:
       "Dubai Lips i Borås för vårdade, återfuktade läppar hos PNK Beauty Klinik."
   }),
-  treatment({
-    slug: "plasma-pen-boras",
-    category: "plasma-pen-boras",
-    title: "Plasma Pen i Borås",
-    eyebrow: "Översikt",
-    summary: "Plasma Pen-behandlingar för flera avgränsade områden.",
-    description:
-      "Plasma Pen passar för utvalda områden där huden behöver riktad åtstramning eller korrigering efter bedömning.",
-    image: "/images/pnk/services/plasma-pen.webp",
-    chips: ["Ögonlock", "Kråksparkar", "Pigment"],
-    priceFrom: "Från 1 000 kr",
-    duration: "30-100 min",
-    practitioner: "PNK Beauty Klinik",
-    priceOptions: [{ label: "Plasma Pen", price: "Från 1 000 kr", duration: "30-100 min" }],
-    process: plasmaProcess,
-    related: [
-      "plasma-pen-ogonlockslyft-boras",
-      "plasma-pen-under-ogonen-boras",
-      "plasma-pen-hudflikar-pigment-boras"
-    ],
-    seoTitle: "Plasma Pen Borås - Behandlingar och priser",
-    seoDescription:
-      "Plasma Pen i Borås från 1 000 kr. Läs om behandlingar för ögonlock, under ögonen, kråksparkar och hudflikar."
-  }),
   ...[
     ["plasma-pen-ogonlockslyft-boras", "Plasma Pen ögonlockslyft i Borås", "Ögonlockslyft", "Från 3 000 kr", "80 min"],
     ["plasma-pen-under-ogonen-boras", "Plasma Pen under ögonen i Borås", "Under ögonen", "Från 3 000 kr", "80 min"],
@@ -591,7 +567,12 @@ export const treatments: Treatment[] = [
       practitioner: "PNK Beauty Klinik",
       priceOptions: [{ label: chip, price, duration }],
       process: plasmaProcess,
-      related: ["plasma-pen-boras", "plasma-pen-ogonlockslyft-boras", "plasma-pen-hudflikar-pigment-boras"].filter(
+      related: [
+        "plasma-pen-ogonlockslyft-boras",
+        "plasma-pen-under-ogonen-boras",
+        "plasma-pen-kraksparkar-boras",
+        "plasma-pen-hudflikar-pigment-boras"
+      ].filter(
         (relatedSlug) => relatedSlug !== slug
       ),
       seoTitle: `${title} - PNK Beauty Klinik`,
@@ -877,7 +858,7 @@ export function getRelatedTreatments(treatment: Treatment, limit = 3) {
   return [...related, ...fallback].slice(0, limit);
 }
 
-export const allTreatmentRoutes = [
+export const allTreatmentRoutes = Array.from(new Set([
   ...publishedCategories.map((category) => `/behandlingar/${category.slug}/`),
   ...publishedTreatments.map((treatment) => `/behandlingar/${treatment.slug}/`)
-];
+]));
