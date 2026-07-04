@@ -70,6 +70,21 @@ check(builtHome.includes("Bokadirekt"), "Home HTML should contain Bokadirekt boo
 check(builtHome.includes("application/ld+json"), "Home HTML should contain structured data");
 check(builtHome.includes("\"@type\":\"LocalBusiness\""), "Home structured data should include LocalBusiness");
 
+const headerFooterChecks = [
+  { needle: "data-mega-menu", message: "Header should include a desktop mega menu" },
+  { needle: "data-mobile-drawer", message: "Header should include a mobile drawer" },
+  { needle: "footer-treatment-group", message: "Footer should include structured treatment groups" },
+  { needle: "footer-bottom", message: "Footer should include a bottom utility/legal row" },
+  { needle: "/behandlingar/botox-boras/", message: "Header/footer should link to Botox treatment" },
+  { needle: "/behandlingar/hudvard-boras/", message: "Header/footer should link to Hudvard category" },
+  { needle: "Boka via Bokadirekt", message: "Header/footer should include Bokadirekt booking CTA" },
+  { needle: "/allmanna-villkor/", message: "Footer should include legal links" }
+];
+
+for (const { needle, message } of headerFooterChecks) {
+  check(builtHome.includes(needle), message);
+}
+
 const homeHeroVideoTag = builtHome.match(/<video class="hero-video"[^>]*>/)?.[0] ?? "";
 check(homeHeroVideoTag.includes("hero-video"), "Home should render hero video media");
 check(!homeHeroVideoTag.includes("poster="), "Home hero video should not use the old PNK banner as poster media");

@@ -1,41 +1,61 @@
 ---
 import { assets } from "../data/home";
-import { footerGroups } from "../data/navigation";
+import { footerBottomLinks, footerGroups } from "../data/navigation";
 import { site } from "../data/site";
 ---
 
 <footer class="site-footer">
-  <div class="site-footer-brand">
-    <img src={assets.logoWhite} width="136" height="63" alt="PNK Beauty Klinik" />
-    <p>
-      Skönhetsklinik i Borås med injektioner, hudvård och behandlingar med fokus på naturliga resultat.
-    </p>
-  </div>
+  <div class="site-footer-shell">
+    <div class="site-footer-top">
+      <div class="site-footer-brand">
+        <img src={assets.logoWhite} width="136" height="63" alt="PNK Beauty Klinik" />
+        <p>
+          Skönhetsklinik i Borås för injektioner, hudvård och behandlingar med fokus på naturliga resultat,
+          trygg rådgivning och ett personligt bemötande.
+        </p>
+        <a class="footer-booking-link" href={site.bookingUrl} target="_blank" rel="noreferrer">Boka via Bokadirekt</a>
+      </div>
 
-  <div class="site-footer-groups">
-    {
-      footerGroups.map((group) => (
-        <nav aria-label={group.title}>
-          <h2>{group.title}</h2>
-          {group.links.map((item) => (
-            <a
-              href={item.href}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noreferrer" : undefined}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
-      ))
-    }
-  </div>
+      <div class="site-footer-contact-panel">
+        <p>Kontakt</p>
+        <address class="site-footer-contact">
+          <strong>{site.name}</strong>
+          <span>{site.address.street}</span>
+          <span>{site.address.postalCode} {site.address.city}</span>
+          <a href={`tel:${site.phoneMachine}`}>{site.phone}</a>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </address>
+      </div>
+    </div>
 
-  <address class="site-footer-contact">
-    <strong>{site.name}</strong>
-    <span>{site.address.street}</span>
-    <span>{site.address.postalCode} {site.address.city}</span>
-    <a href={`tel:${site.phoneMachine}`}>{site.phone}</a>
-    <a href={`mailto:${site.email}`}>{site.email}</a>
-  </address>
+    <div class="site-footer-groups footer-treatment-group">
+      {
+        footerGroups.map((group) => (
+          <nav aria-label={group.title}>
+            <h2>{group.title}</h2>
+            {group.links.map((item) => (
+              <a
+                href={item.href}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noreferrer" : undefined}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        ))
+      }
+    </div>
+
+    <div class="footer-bottom">
+      <span>© {new Date().getFullYear()} {site.name}</span>
+      <nav aria-label="Juridiska länkar">
+        {
+          footerBottomLinks.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
 </footer>
