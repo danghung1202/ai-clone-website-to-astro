@@ -90,6 +90,20 @@ for (const { needle, message } of headerFooterChecks) {
   check(builtHome.includes(needle), message);
 }
 
+const mobileFooterChecks = [
+  { needle: "footer-mobile-compact", message: "Footer should include a compact mobile-specific footer" },
+  { needle: "footer-mobile-primary", message: "Mobile footer should include primary action links" },
+  { needle: "footer-mobile-links", message: "Mobile footer should include compact utility links" }
+];
+
+for (const { needle, message } of mobileFooterChecks) {
+  check(builtHome.includes(needle), message);
+}
+
+check(globalStyles.includes(".site-footer-groups.footer-treatment-group"), "Mobile CSS should target footer treatment groups directly");
+check(globalStyles.includes(".footer-mobile-compact"), "Footer CSS should style the compact mobile footer");
+check(globalStyles.includes(".site-footer .footer-mobile-links"), "Mobile footer links should override the base footer nav layout");
+
 const homeHeroVideoTag = builtHome.match(/<video class="hero-video"[^>]*>/)?.[0] ?? "";
 check(homeHeroVideoTag.includes("hero-video"), "Home should render hero video media");
 check(!homeHeroVideoTag.includes("poster="), "Home hero video should not use the old PNK banner as poster media");

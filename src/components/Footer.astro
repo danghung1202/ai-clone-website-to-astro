@@ -2,6 +2,12 @@
 import { assets } from "../data/home";
 import { footerBottomLinks, footerGroups } from "../data/navigation";
 import { site } from "../data/site";
+
+const mobileFooterLinks = [
+  { label: "Priser", href: "/priser/" },
+  { label: "Presentkort", href: "/presentkort/" },
+  { label: "Artiklar", href: "/artiklar/" }
+];
 ---
 
 <footer class="site-footer">
@@ -26,6 +32,24 @@ import { site } from "../data/site";
           <a href={`mailto:${site.email}`}>{site.email}</a>
         </address>
       </div>
+    </div>
+
+    <div class="footer-mobile-compact" aria-label="Mobil sidfot">
+      <div class="footer-mobile-primary">
+        <a class="footer-mobile-booking" href={site.bookingUrl} target="_blank" rel="noreferrer">Boka tid</a>
+        <a href={`tel:${site.phoneMachine}`}>Ring</a>
+        <a href={`mailto:${site.email}`}>Maila</a>
+      </div>
+      <p class="footer-mobile-address">
+        {site.address.street}, {site.address.postalCode} {site.address.city}
+      </p>
+      <nav class="footer-mobile-links" aria-label="Snabblänkar">
+        {
+          mobileFooterLinks.map((item) => (
+            <a href={item.href}>{item.label}</a>
+          ))
+        }
+      </nav>
     </div>
 
     <div class="site-footer-groups footer-treatment-group">

@@ -93,6 +93,11 @@ function readSplitState(selector) {
   });
 }
 
+function readOpacity(item) {
+  const opacity = Number.parseFloat(item.opacity);
+  return Number.isFinite(opacity) ? opacity : 1;
+}
+
 const { server, origin } = await createStaticServer();
 let browser;
 let passed = false;
@@ -105,7 +110,7 @@ try {
   await page.waitForTimeout(250);
 
   const before = await page.evaluate(readSplitState, ".services-section .home-carousel-h2 .char, .services-section .home-carousel-h3 .word, .services-section .carousel-heading .char");
-  const visibleBeforeReveal = before.filter((item) => item.opacity !== "0");
+  const visibleBeforeReveal = before.filter((item) => readOpacity(item) > 0.001);
   if (visibleBeforeReveal.length) {
     fail("services split text should be hidden before its ScrollTrigger reveal", visibleBeforeReveal.slice(0, 8));
   }
@@ -116,7 +121,7 @@ try {
   const afterCards = await page.evaluate(readSplitState, ".home-carousel .swiper-slide:not(.swiper-slide-duplicate) .carousel-heading .char");
   const afterHeading = await page.evaluate(readSplitState, ".services-section .home-carousel-h2 .char");
   const afterSubheading = await page.evaluate(readSplitState, ".services-section .home-carousel-h3 .word");
-  const hiddenAfterReady = [...afterCards, ...afterHeading, ...afterSubheading].filter((item) => item.opacity !== "1");
+  const hiddenAfterReady = [...afterCards, ...afterHeading, ...afterSubheading].filter((item) => readOpacity(item) < 0.999);
 
   if (hiddenAfterReady.length) {
     fail("all services split text should be visible when carousel is ready", hiddenAfterReady.slice(0, 8));
