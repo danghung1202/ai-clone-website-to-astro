@@ -1930,9 +1930,21 @@ html[data-menu-lock] {
     display: inline-flex;
     font-size: 13px;
     font-weight: 700;
+    gap: 8px;
     justify-content: center;
     min-height: 42px;
     padding: 0 16px;
+  }
+
+  .footer-action-icon {
+    fill: none;
+    flex: 0 0 auto;
+    height: 15px;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+    width: 15px;
   }
 
   .footer-mobile-primary .footer-mobile-booking {

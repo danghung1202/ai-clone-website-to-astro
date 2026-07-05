@@ -93,7 +93,9 @@ for (const { needle, message } of headerFooterChecks) {
 const mobileFooterChecks = [
   { needle: "footer-mobile-compact", message: "Footer should include a compact mobile-specific footer" },
   { needle: "footer-mobile-primary", message: "Mobile footer should include primary action links" },
-  { needle: "footer-mobile-links", message: "Mobile footer should include compact utility links" }
+  { needle: "footer-mobile-links", message: "Mobile footer should include compact utility links" },
+  { needle: "footer-phone-icon", message: "Mobile footer ring action should include a phone icon" },
+  { needle: "footer-mail-icon", message: "Mobile footer mail action should include a mail icon" }
 ];
 
 for (const { needle, message } of mobileFooterChecks) {
