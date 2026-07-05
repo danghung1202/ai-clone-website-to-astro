@@ -41,11 +41,20 @@ const { treatment, relatedTreatments, category } = Astro.props;
     <article class="subpage-reveal">
       <p class="section-kicker">{treatment.eyebrow}</p>
       <h2>{treatment.description}</h2>
-      <p>
-        Varje behandling planeras individuellt utifrån hud, anatomi, tidigare
-        behandlingar och önskat uttryck. Målet är ett resultat som känns
-        balanserat och hållbart över tid.
-      </p>
+      <div class="treatment-story">
+        {treatment.detailSections.map((section) => (
+          <section>
+            <h3>{section.heading}</h3>
+            {section.body.map((paragraph) => <p>{paragraph}</p>)}
+          </section>
+        ))}
+      </div>
+      <div class="treatment-suitable">
+        <h3>Passar för</h3>
+        <ul>
+          {treatment.suitableFor.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
     </article>
     <TreatmentFacts treatment={treatment} />
   </div>

@@ -36,6 +36,9 @@ for (const route of expectedRoutes) {
 const builtHome = existsSync(join(dist, "index.html"))
   ? readFileSync(join(dist, "index.html"), "utf8")
   : "";
+const globalStyles = existsSync(join(root, "src/styles/global.css"))
+  ? readFileSync(join(root, "src/styles/global.css"), "utf8")
+  : "";
 const venetianHeroVideo = "https://venetianspa.ca/wp-content/uploads/2026/04/aea5496227e84dd317a0bf9396ae97ed.mov";
 const scannedOutputs = [];
 
@@ -69,6 +72,8 @@ check(builtHome.includes("PNK Beauty Klinik"), "Home HTML should contain PNK Bea
 check(builtHome.includes("Bokadirekt"), "Home HTML should contain Bokadirekt booking copy");
 check(builtHome.includes("application/ld+json"), "Home HTML should contain structured data");
 check(builtHome.includes("\"@type\":\"LocalBusiness\""), "Home structured data should include LocalBusiness");
+check(globalStyles.includes("min-height: clamp(440px, 62svh, 560px);"), "Subpage hero should use the compact desktop height");
+check(globalStyles.includes("min-height: clamp(430px, 74svh, 560px);"), "Subpage hero should use the compact mobile height");
 
 const headerFooterChecks = [
   { needle: "data-mega-menu", message: "Header should include a desktop mega menu" },
@@ -127,6 +132,31 @@ for (const { route, expected } of pageChecks) {
   const html = readFileSync(file, "utf8");
   for (const text of expected) {
     check(html.includes(text), `${route} should contain verified Bokadirekt value: ${text}`);
+  }
+}
+
+const treatmentDepthChecks = [
+  {
+    route: "/behandlingar/botox-boras/",
+    expected: ["Behandlingen med Botox", "Före och efter Botox", "Efter behandlingen"]
+  },
+  {
+    route: "/behandlingar/lappfillers-boras/",
+    expected: ["Behandlingen med läppfillers", "Vad fillers kan göra för läpparna", "Efter behandlingen"]
+  },
+  {
+    route: "/behandlingar/microneedling-boras/",
+    expected: ["Behandlingen med microneedling", "Detta kan behandlingen passa för", "Efter behandlingen"]
+  }
+];
+
+for (const { route, expected } of treatmentDepthChecks) {
+  const file = routeToFile(route);
+  if (!existsSync(file)) continue;
+  const html = readFileSync(file, "utf8");
+  check(html.includes("treatment-story"), `${route} should render extended treatment description sections`);
+  for (const text of expected) {
+    check(html.includes(text), `${route} should contain extended treatment copy: ${text}`);
   }
 }
 

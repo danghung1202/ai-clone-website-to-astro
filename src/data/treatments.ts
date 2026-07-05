@@ -23,6 +23,11 @@ export interface PriceOption {
   duration: string;
 }
 
+export interface TreatmentDetailSection {
+  heading: string;
+  body: string[];
+}
+
 export interface Treatment {
   slug: string;
   category: string;
@@ -37,6 +42,7 @@ export interface Treatment {
   practitioner: string;
   priceOptions: PriceOption[];
   suitableFor: string[];
+  detailSections: TreatmentDetailSection[];
   process: string[];
   beforeCare: string[];
   afterCare: string[];
@@ -263,13 +269,14 @@ type TreatmentInput = Omit<
   | "published"
   | "beforeCare"
   | "afterCare"
+  | "detailSections"
   | "faq"
   | "process"
   | "suitableFor"
 >;
 
 function treatment(input: TreatmentInput & Partial<Treatment>): Treatment {
-  return {
+  const output = {
     suitableFor: [
       "Dig som vill ha en individuell bedömning.",
       "Dig som vill ha ett naturligt och välplanerat resultat."
@@ -286,6 +293,43 @@ function treatment(input: TreatmentInput & Partial<Treatment>): Treatment {
     published: true,
     ...input
   };
+
+  return {
+    ...output,
+    detailSections: input.detailSections ?? buildTreatmentDetailSections(output)
+  };
+}
+
+function buildTreatmentDetailSections(treatment: TreatmentInput & Partial<Treatment>): TreatmentDetailSection[] {
+  const categoryIntro = treatment.category === "injektioner-boras"
+    ? "Behandlingen börjar med en genomgång av dina mål, ansiktets proportioner och relevanta medicinska frågor. Därefter anpassas behandlingsplanen så att resultatet harmonierar med din mimik och ditt naturliga uttryck."
+    : treatment.category === "hudvard-boras" || treatment.category === "ansiktsbehandlingar-boras"
+      ? "Hudbehandlingen anpassas efter hudens dagsform, känslighet och de resultat du vill arbeta mot. Fokus ligger på att välja rätt intensitet, rätt produkter och en eftervård som huden klarar av."
+      : "Behandlingen planeras efter område, önskat uttryck och hur mycket eftervård som behövs för att resultatet ska bli hållbart och kännas välbalanserat.";
+
+  return [
+    {
+      heading: `Om ${treatment.title.replace(" i Borås", "")}`,
+      body: [
+        `${treatment.description} ${treatment.summary}`,
+        categoryIntro
+      ]
+    },
+    {
+      heading: "Behandlingen steg för steg",
+      body: [
+        `Hos PNK Beauty Klinik görs behandlingen metodiskt: först rådgivning, sedan förberedelse av området och därefter själva behandlingen i lugnt tempo.`,
+        `Tiden som anges för behandlingen är ${treatment.duration}. Under besöket får du veta vad som är realistiskt, när resultatet brukar märkas och om fler behandlingar kan vara aktuella.`
+      ]
+    },
+    {
+      heading: "Efter behandlingen",
+      body: [
+        "Efteråt får du tydliga råd om vad du bör undvika, hur huden eller området kan reagera och när du kan återgå till vanliga rutiner.",
+        "Kontakta alltid kliniken om något känns oväntat efter besöket. Det är bättre att fråga en gång för mycket än att gå hem med oro."
+      ]
+    }
+  ];
 }
 
 function basicBeforeCare(category: string) {
@@ -354,6 +398,29 @@ export const treatments: Treatment[] = [
       { label: "Botox 2 områden", price: "3 200 kr", duration: "30 min" },
       { label: "Botox 3 områden", price: "3 700 kr", duration: "45 min" }
     ],
+    detailSections: [
+      {
+        heading: "Behandlingen med Botox",
+        body: [
+          "Botox används för att mjuka upp linjer som uppstår när samma muskler i ansiktet aktiveras om och om igen. Vanliga områden är argrynkan mellan ögonbrynen, pannan och linjer runt ögonen. Behandlingen planeras efter hur just din mimik arbetar, inte efter en färdig mall.",
+          "Hos PNK Beauty Klinik är målet att dämpa oönskad spänning utan att ansiktet tappar personlighet. Dos, område och placering anpassas efter anatomi, tidigare behandlingar och hur mycket rörelse du vill behålla. Resultatet kommer gradvis och utvärderas bäst när behandlingen hunnit sätta sig."
+        ]
+      },
+      {
+        heading: "Före och efter Botox",
+        body: [
+          "Inför behandling går vi igenom hälsa, läkemedel, tidigare injektionsbehandlingar och dina förväntningar. Du ska inte behandlas om du har infektion i området, feber eller sjukdomskänsla. Graviditet och amning är också skäl att avvakta med injektionsbehandling.",
+          "Efter behandlingen kan små märken, rodnad eller lätt ömhet förekomma. Undvik att massera behandlade områden, träna hårt, basta eller dricka alkohol det första dygnet. Du kan vanligtvis återgå till vardagen direkt, men planera gärna behandlingen med marginal inför viktiga tillfällen."
+        ]
+      },
+      {
+        heading: "Efter behandlingen",
+        body: [
+          "Effekten brukar komma stegvis under de första dagarna. För många märks slutresultatet tydligast efter ungefär två veckor, och hållbarheten varierar beroende på område, dos, mimik och individuella förutsättningar.",
+          "Om du är osäker på resultatet eller får en reaktion som inte känns normal ska du kontakta kliniken. Uppföljning och rådgivning är en viktig del av en trygg behandlingsplan, särskilt när målet är ett naturligt uttryck över tid."
+        ]
+      }
+    ],
     related: ["konsultation", "fillers-boras", "prophilo-boras"],
     seoTitle: "Botox Borås - PNK Beauty Klinik",
     seoDescription:
@@ -397,6 +464,29 @@ export const treatments: Treatment[] = [
       { label: "Läppar 1 ml", price: "Från 2 500 kr", duration: "30 min" }
     ],
     suitableFor: fillerSuitableFor,
+    detailSections: [
+      {
+        heading: "Vad fillers kan göra för läpparna",
+        body: [
+          "Läppar förändras med ålder, mimik och hudens fuktnivå. Konturen kan bli mindre tydlig, mungiporna kan upplevas mer nedåtgående och läpparna kan kännas torrare eller tunnare än tidigare. Läppfillers kan användas för att återställa volym, skapa mer definition eller ge ett mjukare och mer återfuktat uttryck.",
+          "Behandlingen handlar inte bara om storlek. En välplanerad läppbehandling tar hänsyn till amorbåge, symmetri, profil, över- och underläpp samt hur läpparna passar ihop med resten av ansiktet. Målet hos PNK Beauty Klinik är att läpparna ska kännas harmoniska, inte överbehandlade."
+        ]
+      },
+      {
+        heading: "Behandlingen med läppfillers",
+        body: [
+          "Inför behandlingen går vi igenom önskat resultat, tidigare fillers, eventuella reaktioner och vilken teknik som passar bäst. Om du vill ha mer kontur, mer fukt eller tydligare volym påverkar hur behandlingen planeras.",
+          "Själva behandlingen utförs stegvis och området bedöms löpande. Läppar är ett känsligt område och därför är både tempo, placering och mängd viktigt. Resultatet syns direkt, men den första tiden kan svullnad göra att läpparna ser större ut än slutresultatet."
+        ]
+      },
+      {
+        heading: "Efter behandlingen",
+        body: [
+          "Efter läppfillers är svullnad, ömhet och små blåmärken vanligt. Undvik att trycka, massera eller värma området om du inte fått särskilda instruktioner. Planera inte behandlingen precis före ett större event eftersom läpparna behöver tid att lägga sig.",
+          "När svullnaden minskar blir form och balans lättare att bedöma. Kontakta kliniken om du får stark smärta, missfärgning, tilltagande svullnad eller om något känns fel. En trygg eftervård är lika viktig som själva behandlingen."
+        ]
+      }
+    ],
     related: ["fillers-boras", "fillers-kinder-boras", "botox-boras"],
     seoTitle: "Läppfillers Borås - PNK Beauty Klinik",
     seoDescription:
@@ -460,6 +550,29 @@ export const treatments: Treatment[] = [
     duration: "80 min",
     practitioner: "PNK Beauty Klinik",
     priceOptions: [{ label: "Microneedling", price: "2 995 kr", duration: "80 min" }],
+    detailSections: [
+      {
+        heading: "Behandlingen med microneedling",
+        body: [
+          "Microneedling är en hudbehandling där huden stimuleras kontrollerat med små nålkanaler. Syftet är att aktivera hudens egna reparationsprocesser och skapa bättre förutsättningar för lyster, jämnare struktur och friskare hudkvalitet över tid.",
+          "Behandlingen anpassas efter hudtyp, känslighet och område. Djup, intensitet och produkter väljs utifrån vad huden behöver just då. För många är microneedling ett bra alternativ när man vill arbeta mer aktivt med hudens kvalitet utan att gå direkt på injektionsbehandlingar."
+        ]
+      },
+      {
+        heading: "Detta kan behandlingen passa för",
+        body: [
+          "Microneedling kan vara aktuellt vid glåmig hud, ojämn hudstruktur, större porer, fina linjer, ytliga ärr eller hud som behöver mer spänst och klarhet. Det är också en behandling som ofta planeras som kur när man vill bygga resultat successivt.",
+          "Alla hudtillstånd passar inte för microneedling vid varje tillfälle. Aktiv infektion, irriterad hud, stark solbränna eller vissa läkemedel kan göra att behandlingen bör skjutas upp. Därför görs alltid en bedömning innan behandlingen startar."
+        ]
+      },
+      {
+        heading: "Efter behandlingen",
+        body: [
+          "Efter microneedling kan huden kännas varm, röd och stram, ungefär som efter en lätt solbränna. Reaktionen brukar lägga sig stegvis, men huden kan vara torrare och känsligare under de första dagarna.",
+          "Eftervården är viktig. Använd mild rengöring, rikligt med fukt och solskydd. Vänta med syror, retinoider, peeling och starka aktiva produkter tills huden känns lugn igen. Det gör resultatet jämnare och minskar risken för irritation."
+        ]
+      }
+    ],
     related: ["bb-glow-boras", "kemisk-peeling-boras", "biorepeel-boras"],
     seoTitle: "Microneedling Borås - PNK Beauty Klinik",
     seoDescription:
