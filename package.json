@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "capture:motion": "node tools/capture-motion.mjs",
-    "verify:static": "npm run build && node tools/verify-static-build.mjs"
+    "verify:motion": "npm run build && node tools/verify-motion-runtime.mjs",
+    "verify:static": "npm run build && node tools/verify-static-build.mjs && node tools/verify-motion-runtime.mjs"
   },
   "dependencies": {
     "astro": "^5.9.0",

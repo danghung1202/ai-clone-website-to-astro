@@ -8,6 +8,8 @@ gsap.registerPlugin(ScrollTrigger);
 (window as Window & { ScrollTrigger: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
 
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const VENETIAN_HEADING_CHAR_STAGGER = 0.05;
+const VENETIAN_SUBHEADING_WORD_STAGGER = 0.1;
 
 const $ = <T extends Element = Element>(selector: string, root: ParentNode = document): T | null =>
   root.querySelector<T>(selector);
@@ -18,21 +20,44 @@ const $$ = <T extends Element = Element>(selector: string, root: ParentNode = do
 function split(selector: string, types: string): SplitType | null {
   const element = $(selector);
   if (!element) return null;
-  return new SplitType(element as HTMLElement, { types });
+  return splitElement(element, types);
 }
 
 function splitElement(element: Element | null, types: string): SplitType | null {
   if (!element) return null;
-  return new SplitType(element as HTMLElement, { types });
+  const htmlElement = element as HTMLElement;
+  const previousVisibility = htmlElement.style.visibility;
+  htmlElement.style.visibility = "hidden";
+  try {
+    return new SplitType(htmlElement, { types });
+  } finally {
+    htmlElement.style.visibility = previousVisibility;
+  }
+}
+
+function primeSplitChars(targets: Element[] | undefined, y = 30) {
+  if (!targets?.length) return;
+  gsap.set(targets, { y, opacity: 0 });
+}
+
+function primeSplitWords(targets: Element[] | undefined, y = 15) {
+  if (!targets?.length) return;
+  gsap.set(targets, { y, opacity: 0 });
+}
+
+function primeSplitLines(targets: Element[] | undefined, y = 20) {
+  if (!targets?.length) return;
+  gsap.set(targets, { y, opacity: 0 });
 }
 
 function revealChars(targets: Element[] | undefined, trigger: Element | null, id: string) {
   if (!targets?.length || !trigger) return;
-  gsap.from(targets, {
-    y: 30,
-    opacity: 0,
+  primeSplitChars(targets);
+  gsap.to(targets, {
+    y: 0,
+    opacity: 1,
     duration: 0.3,
-    stagger: 0.05,
+    stagger: VENETIAN_HEADING_CHAR_STAGGER,
     ease: "power2.out",
     scrollTrigger: {
       id,
@@ -44,9 +69,10 @@ function revealChars(targets: Element[] | undefined, trigger: Element | null, id
 
 function revealHeroChars(targets: Element[] | undefined, trigger: Element | null) {
   if (!targets?.length || !trigger) return;
-  gsap.from(targets, {
-    y: 30,
-    opacity: 0,
+  primeSplitChars(targets);
+  gsap.to(targets, {
+    y: 0,
+    opacity: 1,
     duration: 0.28,
     stagger: 0.012,
     ease: "power2.out",
@@ -171,6 +197,8 @@ function initIntro() {
   const button = $(".radius-button");
   const headingSplit = splitElement(heading, "words, chars");
   const copySplit = splitElement(copy, "lines");
+  primeSplitChars(headingSplit?.chars);
+  primeSplitLines(copySplit?.lines);
 
   const timeline = gsap.timeline({
     scrollTrigger: {
@@ -181,23 +209,23 @@ function initIntro() {
   });
 
   if (headingSplit?.chars.length) {
-    timeline.from(headingSplit.chars, {
-      y: 30,
-      opacity: 0,
+    timeline.to(headingSplit.chars, {
+      y: 0,
+      opacity: 1,
       duration: 0.3,
-      stagger: 0.05,
+      stagger: VENETIAN_HEADING_CHAR_STAGGER,
       ease: "power2.out"
     });
   }
 
   if (copySplit?.lines.length) {
-    timeline.from(
+    timeline.to(
       copySplit.lines,
       {
-        y: 20,
-        opacity: 0,
+        y: 0,
+        opacity: 1,
         duration: 0.35,
-        stagger: 0.1,
+        stagger: VENETIAN_SUBHEADING_WORD_STAGGER,
         ease: "power2.out"
       },
       "-=0.15"
@@ -219,6 +247,8 @@ function initServices() {
   const headingSplit = splitElement(heading, "words, chars");
   const subheading = $(".home-carousel-h3");
   const subheadingSplit = splitElement(subheading, "words");
+  primeSplitChars(headingSplit?.chars);
+  primeSplitWords(subheadingSplit?.words);
 
   const headingTimeline = gsap.timeline({
     scrollTrigger: {
@@ -229,23 +259,23 @@ function initServices() {
   });
 
   if (headingSplit?.chars.length) {
-    headingTimeline.from(headingSplit.chars, {
-      y: 30,
-      opacity: 0,
-      duration: 0.25,
-      stagger: 0.012,
+    headingTimeline.to(headingSplit.chars, {
+      y: 0,
+      opacity: 1,
+      duration: 0.3,
+      stagger: VENETIAN_HEADING_CHAR_STAGGER,
       ease: "power2.out"
     });
   }
 
   if (subheadingSplit?.words.length) {
-    headingTimeline.from(
+    headingTimeline.to(
       subheadingSplit.words,
       {
-        y: 15,
-        opacity: 0,
+        y: 0,
+        opacity: 1,
         duration: 0.3,
-        stagger: 0.1,
+        stagger: VENETIAN_SUBHEADING_WORD_STAGGER,
         ease: "power2.out"
       },
       "-=0.2"
@@ -289,6 +319,7 @@ function initServices() {
   if (!slides.length) return;
 
   let carouselReady = false;
+  let carouselRevealReadyDelay = 0;
   const markCarouselReady = () => {
     if (carouselReady) return;
     carouselReady = true;
@@ -306,8 +337,16 @@ function initServices() {
     if (!container || !headingElement) return;
 
     const splitHeading = splitElement(headingElement, "chars");
+    primeSplitChars(splitHeading?.chars);
+    const slideDelay = index * 0.18;
+    const headingRevealDuration = splitHeading?.chars.length
+      ? 0.3 + Math.max(splitHeading.chars.length - 1, 0) * VENETIAN_HEADING_CHAR_STAGGER
+      : 0;
+    const slideRevealDuration = Math.max(0.8, 0.5 + headingRevealDuration);
+    carouselRevealReadyDelay = Math.max(carouselRevealReadyDelay, slideDelay + slideRevealDuration);
+
     const timeline = gsap.timeline({
-      delay: index * 0.18,
+      delay: slideDelay,
       scrollTrigger: {
         id: `home-carousel-slide-${index + 1}`,
         trigger: carousel,
@@ -332,13 +371,13 @@ function initServices() {
     );
 
     if (splitHeading?.chars.length) {
-      timeline.from(
+      timeline.to(
         splitHeading.chars,
         {
-          y: 30,
-          opacity: 0,
-          duration: 0.25,
-          stagger: 0.012,
+          y: 0,
+          opacity: 1,
+          duration: 0.3,
+          stagger: VENETIAN_HEADING_CHAR_STAGGER,
           ease: "power2.out"
         },
         "-=0.3"
@@ -358,7 +397,7 @@ function initServices() {
     start: "top 50%",
     once: true,
     onEnter: () => {
-      gsap.delayedCall(0.85, markCarouselReady);
+      gsap.delayedCall(carouselRevealReadyDelay + 0.15, markCarouselReady);
     }
   });
 
@@ -386,6 +425,8 @@ function initAtmosphere() {
   const moveImages = $$(".move-up-img");
   const headingSplit = splitElement(heading, "words, chars");
   const copySplit = splitElement(copy, "lines");
+  primeSplitChars(headingSplit?.chars);
+  primeSplitLines(copySplit?.lines);
 
   const timeline = gsap.timeline({
     scrollTrigger: {
@@ -396,9 +437,9 @@ function initAtmosphere() {
   });
 
   if (headingSplit?.chars.length) {
-    timeline.from(headingSplit.chars, {
-      y: 30,
-      opacity: 0,
+    timeline.to(headingSplit.chars, {
+      y: 0,
+      opacity: 1,
       duration: 0.3,
       stagger: 0.035,
       ease: "power2.out"
@@ -406,11 +447,11 @@ function initAtmosphere() {
   }
 
   if (copySplit?.lines.length) {
-    timeline.from(
+    timeline.to(
       copySplit.lines,
       {
-        y: 20,
-        opacity: 0,
+        y: 0,
+        opacity: 1,
         duration: 0.35,
         stagger: 0.08,
         ease: "power2.out"
@@ -558,6 +599,8 @@ function initContact() {
   const copy = $(".cta-p");
   const headingSplit = splitElement(heading, "words, chars");
   const copySplit = splitElement(copy, "lines");
+  primeSplitChars(headingSplit?.chars);
+  primeSplitLines(copySplit?.lines);
 
   const timeline = gsap.timeline({
     scrollTrigger: {
@@ -568,9 +611,9 @@ function initContact() {
   });
 
   if (headingSplit?.chars.length) {
-    timeline.from(headingSplit.chars, {
-      y: 30,
-      opacity: 0,
+    timeline.to(headingSplit.chars, {
+      y: 0,
+      opacity: 1,
       duration: 0.3,
       stagger: 0.045,
       ease: "power2.out"
@@ -578,11 +621,11 @@ function initContact() {
   }
 
   if (copySplit?.lines.length) {
-    timeline.from(
+    timeline.to(
       copySplit.lines,
       {
-        y: 20,
-        opacity: 0,
+        y: 0,
+        opacity: 1,
         duration: 0.35,
         stagger: 0.08,
         ease: "power2.out"
