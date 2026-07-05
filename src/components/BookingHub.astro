@@ -1,0 +1,356 @@
+---
+import { site } from "../data/site";
+import { getPublishedTreatmentBySlug } from "../data/treatments";
+
+const bookingGroups = [
+  {
+    id: "consultation",
+    label: "Osäker",
+    eyebrow: "Trygg start",
+    title: "Börja med konsultation",
+    copy: "För dig som vill prata igenom mål, medicinska frågor och vilket behandlingsval som är rimligt."
+  },
+  {
+    id: "injections",
+    label: "Injektioner",
+    eyebrow: "Medicinsk estetik",
+    title: "Botox och fillers",
+    copy: "För rynkbehandling, läppar, form, proportioner och naturliga resultat med tydlig rådgivning."
+  },
+  {
+    id: "skin",
+    label: "Hud",
+    eyebrow: "Hudförbättring",
+    title: "Lyster, struktur och fukt",
+    copy: "För ansiktsbehandlingar, microneedling, BioRePeel och hud som behöver en tydlig plan."
+  },
+  {
+    id: "beauty",
+    label: "Detaljer",
+    eyebrow: "Snabb uppfräschning",
+    title: "Fransar, makeup och gåva",
+    copy: "För enklare bokningar inför vardag, fest, event eller när du vill ge bort en behandling."
+  }
+];
+
+const bookingTreatments = [
+  { slug: "konsultation", group: "consultation", note: "Bästa start om du är osäker" },
+  { slug: "botox-boras", group: "injections", note: "Populärt val för linjer och uttryck" },
+  { slug: "lappfillers-boras", group: "injections", note: "För läppar, form och balans" },
+  { slug: "klassisk-ansiktsbehandling-boras", group: "skin", note: "Trygg start för hud och lyster" },
+  { slug: "microneedling-boras", group: "skin", note: "För struktur, porer och hudkvalitet" },
+  { slug: "biorepeel-boras", group: "skin", note: "Aktiv hudförnyelse med kort downtime" },
+  { slug: "lashlift-boras", group: "beauty", note: "Snabb detaljbehandling inför vardag eller event" }
+]
+  .map((item) => {
+    const treatment = getPublishedTreatmentBySlug(item.slug);
+    return treatment ? { ...item, treatment } : null;
+  })
+  .filter(Boolean);
+
+const campaigns = [
+  {
+    code: "GLOWSTART",
+    title: "Glow start",
+    copy: "För dig som vill börja med hudanalys, rengöring och en första plan för lyster.",
+    meta: "Hudvård"
+  },
+  {
+    code: "EVENTREADY",
+    title: "Event ready",
+    copy: "Planera fransar, makeup eller hudvård inför datum där timing spelar roll.",
+    meta: "Inför event"
+  },
+  {
+    code: "CONSULTFIRST",
+    title: "Konsultation först",
+    copy: "Rätt upplägg när du vill jämföra Botox, fillers eller hudvård innan du bokar.",
+    meta: "Rådgivning"
+  }
+];
+
+const timeSlots = [
+  "Första lediga tid",
+  "Denna vecka",
+  "Nästa vecka",
+  "Kvällstid"
+];
+---
+
+<section
+  class="booking-hub subpage-section subpage-section-cream"
+  id="boka-online"
+  data-booking-hub
+  data-provider-ready="fresha"
+  data-booking-email={site.email}
+>
+  <div class="subpage-shell booking-hub-shell">
+    <div class="booking-hub-heading">
+      <p class="section-kicker">Digital bokning</p>
+      <h2>Välj rätt behandling innan du öppnar bokningsportalen</h2>
+      <p>
+        Guiden hjälper dig att välja område, se passande behandlingar och ta med kampanjkod eller önskat tidsspann
+        när du slutför bokningen online.
+      </p>
+    </div>
+
+    <div class="booking-hub-grid">
+      <aside class="booking-sidebar" aria-label="Välj behandlingsområde">
+        <span class="booking-step">1. Välj område</span>
+        <div class="booking-picker" role="list">
+          {
+            bookingGroups.map((group, index) => (
+              <button
+                class:list={["booking-picker-option", index === 0 && "is-active"]}
+                type="button"
+                data-booking-category={group.id}
+                aria-pressed={index === 0 ? "true" : "false"}
+              >
+                <span>{group.label}</span>
+                <strong>{group.title}</strong>
+                <small>{group.copy}</small>
+              </button>
+            ))
+          }
+        </div>
+      </aside>
+
+      <div class="booking-main">
+        <section class="booking-treatment-picker" aria-label="Rekommenderade behandlingar">
+          <div class="booking-panel-heading">
+            <span class="booking-step">2. Välj behandling</span>
+            <p data-booking-summary-treatment>Start: konsultation eller rådgivning.</p>
+          </div>
+          <div class="booking-treatment-grid">
+            {
+              bookingTreatments.map((item) => (
+                <article class="booking-treatment-card" data-booking-group={item.group}>
+                  <p>{item.treatment.eyebrow}</p>
+                  <h3>{item.treatment.title}</h3>
+                  <span>{item.note}</span>
+                  <dl>
+                    <div>
+                      <dt>Från</dt>
+                      <dd>{item.treatment.priceFrom}</dd>
+                    </div>
+                    <div>
+                      <dt>Tid</dt>
+                      <dd>{item.treatment.duration}</dd>
+                    </div>
+                  </dl>
+                  <div>
+                    <a href={`/behandlingar/${item.treatment.slug}/`}>Läs mer</a>
+                    <button type="button" data-select-treatment={item.treatment.title}>Välj</button>
+                  </div>
+                </article>
+              ))
+            }
+            <article class="booking-treatment-card" data-booking-group="beauty">
+              <p>Ge bort egen tid</p>
+              <h3>Presentkort</h3>
+              <span>För behandlingar, hudvård eller rådgivning.</span>
+              <dl>
+                <div>
+                  <dt>Belopp</dt>
+                  <dd>Valfritt</dd>
+                </div>
+                <div>
+                  <dt>Leverans</dt>
+                  <dd>Efter kontakt</dd>
+                </div>
+              </dl>
+              <div>
+                <a href="/presentkort/">Läs mer</a>
+                <button type="button" data-select-treatment="Presentkort">Välj</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="booking-campaigns" id="kampanjer" aria-label="Kampanjer och paket">
+          <div class="booking-panel-heading">
+            <span class="booking-step">3. Kampanj eller paket</span>
+            <p>Välj en kod att ta med i bokningen. Erbjudanden aktiveras först när kliniken bekräftar kampanjen.</p>
+          </div>
+          <div class="booking-campaign-grid">
+            {
+              campaigns.map((campaign) => (
+                <button type="button" class="booking-campaign-card" data-campaign-code={campaign.code}>
+                  <span>{campaign.meta}</span>
+                  <strong>{campaign.title}</strong>
+                  <small>{campaign.copy}</small>
+                  <b>{campaign.code}</b>
+                </button>
+              ))
+            }
+          </div>
+          <label class="booking-code-field">
+            <span>Kampanjkod</span>
+            <input type="text" value="" placeholder="Ex. GLOWSTART" data-booking-code />
+          </label>
+        </section>
+      </div>
+
+      <aside class="booking-summary" aria-label="Sammanfattning">
+        <span class="booking-step">4. Slutför</span>
+        <h3>Din bokningsplan</h3>
+        <div class="booking-time-preview">
+          {
+            timeSlots.map((slot, index) => (
+              <button
+                class:list={[index === 0 && "is-active"]}
+                type="button"
+                data-time-slot={slot}
+                aria-pressed={index === 0 ? "true" : "false"}
+              >
+                {slot}
+              </button>
+            ))
+          }
+        </div>
+        <dl class="booking-summary-list">
+          <div>
+            <dt>Behandling</dt>
+            <dd data-summary-treatment>Konsultation eller rådgivning</dd>
+          </div>
+          <div>
+            <dt>Tid</dt>
+            <dd data-summary-time>Första lediga tid</dd>
+          </div>
+          <div>
+            <dt>Kampanj</dt>
+            <dd data-summary-campaign>Ingen kod vald</dd>
+          </div>
+        </dl>
+        <a class="pill-link booking-complete-link" href={site.bookingUrl} target="_blank" rel="noreferrer">
+          Öppna bokningsportal
+        </a>
+        <a class="booking-request-link" href={`mailto:${site.email}?subject=Bokningsf%C3%B6rfr%C3%A5gan%20PNK%20Beauty`}>
+          Skicka förfrågan via mail
+        </a>
+        <p>
+          Exakta tider, behandlare och eventuella depositioner hanteras i bokningsportalen.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector("[data-booking-hub]");
+
+  if (root) {
+    const categoryButtons = Array.from(root.querySelectorAll("[data-booking-category]"));
+    const treatmentCards = Array.from(root.querySelectorAll("[data-booking-group]"));
+    const treatmentButtons = Array.from(root.querySelectorAll("[data-select-treatment]"));
+    const campaignButtons = Array.from(root.querySelectorAll("[data-campaign-code]"));
+    const timeButtons = Array.from(root.querySelectorAll("[data-time-slot]"));
+    const codeInput = root.querySelector("[data-booking-code]");
+    const headingSummary = root.querySelector("[data-booking-summary-treatment]");
+    const summaryTreatment = root.querySelector("[data-summary-treatment]");
+    const summaryTime = root.querySelector("[data-summary-time]");
+    const summaryCampaign = root.querySelector("[data-summary-campaign]");
+    const requestLink = root.querySelector(".booking-request-link");
+    const bookingEmail = root.getAttribute("data-booking-email") || "info@pnkbeauty.se";
+
+    const state = {
+      treatment: "Konsultation eller rådgivning",
+      time: "Första lediga tid",
+      campaign: ""
+    };
+
+    const updateRequestLink = () => {
+      if (!(requestLink instanceof HTMLAnchorElement)) return;
+
+      const subject = "Bokningsförfrågan PNK Beauty";
+      const body = [
+        `Behandling: ${state.treatment}`,
+        `Tid: ${state.time}`,
+        `Kampanjkod: ${state.campaign || "Ingen"}`,
+        "",
+        "Namn:",
+        "Telefon:"
+      ].join("\n");
+
+      requestLink.href = `mailto:${bookingEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    };
+
+    const syncSummary = () => {
+      if (headingSummary) headingSummary.textContent = `Valt: ${state.treatment}.`;
+      if (summaryTreatment) summaryTreatment.textContent = state.treatment;
+      if (summaryTime) summaryTime.textContent = state.time;
+      if (summaryCampaign) summaryCampaign.textContent = state.campaign || "Ingen kod vald";
+      updateRequestLink();
+    };
+
+    const setCategory = (category) => {
+      categoryButtons.forEach((button) => {
+        const isActive = button.getAttribute("data-booking-category") === category;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+
+      treatmentCards.forEach((card) => {
+        const isVisible = card.getAttribute("data-booking-group") === category;
+        card.toggleAttribute("hidden", !isVisible);
+      });
+
+      const firstVisibleButton = treatmentButtons.find(
+        (button) => !button.closest("[data-booking-group]")?.hasAttribute("hidden")
+      );
+      const treatment = firstVisibleButton?.getAttribute("data-select-treatment");
+      if (treatment) {
+        state.treatment = treatment;
+        syncSummary();
+      }
+    };
+
+    categoryButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const category = button.getAttribute("data-booking-category");
+        if (category) setCategory(category);
+      });
+    });
+
+    treatmentButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const treatment = button.getAttribute("data-select-treatment");
+        if (!treatment) return;
+        state.treatment = treatment;
+        syncSummary();
+      });
+    });
+
+    campaignButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const code = button.getAttribute("data-campaign-code") ?? "";
+        state.campaign = code;
+        if (codeInput instanceof HTMLInputElement) codeInput.value = code;
+        campaignButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+        syncSummary();
+      });
+    });
+
+    codeInput?.addEventListener("input", () => {
+      state.campaign = codeInput instanceof HTMLInputElement ? codeInput.value.trim() : "";
+      syncSummary();
+    });
+
+    timeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const slot = button.getAttribute("data-time-slot");
+        if (!slot) return;
+        state.time = slot;
+        timeButtons.forEach((item) => {
+          const isActive = item === button;
+          item.classList.toggle("is-active", isActive);
+          item.setAttribute("aria-pressed", String(isActive));
+        });
+        syncSummary();
+      });
+    });
+
+    setCategory("consultation");
+    syncSummary();
+  }
+</script>

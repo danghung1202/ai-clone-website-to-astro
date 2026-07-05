@@ -36,6 +36,9 @@ for (const route of expectedRoutes) {
 const builtHome = existsSync(join(dist, "index.html"))
   ? readFileSync(join(dist, "index.html"), "utf8")
   : "";
+const builtBooking = existsSync(routeToFile("/boka/"))
+  ? readFileSync(routeToFile("/boka/"), "utf8")
+  : "";
 const globalStyles = existsSync(join(root, "src/styles/global.css"))
   ? readFileSync(join(root, "src/styles/global.css"), "utf8")
   : "";
@@ -105,6 +108,20 @@ for (const { needle, message } of mobileFooterChecks) {
 check(globalStyles.includes(".site-footer-groups.footer-treatment-group"), "Mobile CSS should target footer treatment groups directly");
 check(globalStyles.includes(".footer-mobile-compact"), "Footer CSS should style the compact mobile footer");
 check(globalStyles.includes(".site-footer .footer-mobile-links"), "Mobile footer links should override the base footer nav layout");
+
+const bookingHubChecks = [
+  { needle: "booking-hub", message: "Booking page should render the premium booking hub" },
+  { needle: "booking-campaigns", message: "Booking page should include campaign cards" },
+  { needle: "booking-treatment-picker", message: "Booking page should include treatment choice guidance" },
+  { needle: "booking-time-preview", message: "Booking page should include time slot preview" },
+  { needle: "data-provider-ready=\"fresha\"", message: "Booking page should be marked as Fresha-ready" }
+];
+
+for (const { needle, message } of bookingHubChecks) {
+  check(builtBooking.includes(needle), message);
+}
+
+check(globalStyles.includes(".booking-hub"), "Booking hub should have dedicated CSS");
 
 const homeHeroVideoTag = builtHome.match(/<video class="hero-video"[^>]*>/)?.[0] ?? "";
 check(homeHeroVideoTag.includes("hero-video"), "Home should render hero video media");

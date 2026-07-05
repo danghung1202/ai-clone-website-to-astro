@@ -25,7 +25,7 @@ const primaryNavItems = navItems.filter((item) => item.label !== "Behandlingar")
         <span aria-hidden="true"></span>
       </button>
       {primaryNavItems.map((item) => <a class="desktop-nav-link" href={item.href}>{item.label}</a>)}
-      <a class="nav-booking-link" href={site.bookingUrl} target="_blank" rel="noreferrer">Boka tid</a>
+      <a class="nav-booking-link" href="/boka/">Boka tid</a>
     </nav>
 
     <button
@@ -79,7 +79,7 @@ const primaryNavItems = navItems.filter((item) => item.label !== "Behandlingar")
       <span>PNK Beauty</span>
       <button type="button" aria-label="Stäng meny" data-menu-close>Stäng</button>
     </div>
-    <a class="mobile-booking-link" href={site.bookingUrl} target="_blank" rel="noreferrer">Boka via Bokadirekt</a>
+    <a class="mobile-booking-link" href="/boka/">Boka tid</a>
     <div class="mobile-nav-section">
       <p>Behandlingar</p>
       {

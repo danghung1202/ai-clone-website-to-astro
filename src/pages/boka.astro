@@ -1,9 +1,8 @@
 ---
-import BookingCTA from "../components/BookingCTA.astro";
+import BookingHub from "../components/BookingHub.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import SubpageHero from "../components/SubpageHero.astro";
-import { site } from "../data/site";
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
@@ -16,45 +15,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <main>
     <SubpageHero
       eyebrow="Boka"
-      title="Boka tid via Bokadirekt"
-      copy="Välj behandling, tid och behandlare direkt i Bokadirekt. Är du osäker börjar du tryggast med en konsultation."
+      title="Boka tid hos PNK Beauty"
+      copy="Välj behandling med guidning, ta med kampanjkod och öppna bokningsportalen först när du vet vad du vill boka."
       image="/images/pnk/clinic-reception.jpg"
       actions={[
-        { label: "Öppna Bokadirekt", href: site.bookingUrl, external: true },
-        { label: "Se priser", href: "/priser/", variant: "light" }
+        { label: "Starta bokning", href: "#boka-online" },
+        { label: "Se kampanjer", href: "#kampanjer", variant: "light" }
       ]}
     />
 
-    <section class="subpage-section subpage-section-cream">
-      <div class="subpage-shell utility-split">
-        <div>
-          <p class="section-kicker">Bokning</p>
-          <h2>All bokning sker enklast i Bokadirekt</h2>
-          <p>
-            Där ser du lediga tider, aktuell bokningsinformation och de
-            behandlingar som kan bokas online hos PNK Beauty Klinik.
-          </p>
-          <a class="pill-link pill-dark utility-action" href={site.bookingUrl} target="_blank" rel="noreferrer">
-            Boka via Bokadirekt
-          </a>
-        </div>
-        <div class="utility-panel">
-          <h3>Osäker på vad du ska boka?</h3>
-          <p>
-            Boka konsultation först om du vill prata igenom mål, förutsättningar
-            och om Botox, fillers, hudvård eller annan behandling passar dig.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <div class="subpage-shell">
-      <BookingCTA
-        dark
-        title="Redo att välja tid?"
-        copy="Bokadirekt visar lediga tider och bekräftar dina bokningsdetaljer."
-      />
-    </div>
+    <BookingHub />
   </main>
   <Footer />
 
