@@ -1,79 +1,116 @@
 ---
 import { site } from "../data/site";
-import { getPublishedTreatmentBySlug } from "../data/treatments";
+import {
+  publishedCategories,
+  publishedTreatments,
+  type PriceOption,
+  type Treatment
+} from "../data/treatments";
 
-const bookingGroups = [
-  {
-    id: "consultation",
-    label: "Osäker",
-    eyebrow: "Trygg start",
-    title: "Börja med konsultation",
-    copy: "För dig som vill prata igenom mål, medicinska frågor och vilket behandlingsval som är rimligt."
-  },
-  {
-    id: "injections",
-    label: "Injektioner",
-    eyebrow: "Medicinsk estetik",
-    title: "Botox och fillers",
-    copy: "För rynkbehandling, läppar, form, proportioner och naturliga resultat med tydlig rådgivning."
-  },
-  {
-    id: "skin",
-    label: "Hud",
-    eyebrow: "Hudförbättring",
-    title: "Lyster, struktur och fukt",
-    copy: "För ansiktsbehandlingar, microneedling, BioRePeel och hud som behöver en tydlig plan."
-  },
-  {
-    id: "beauty",
-    label: "Detaljer",
-    eyebrow: "Snabb uppfräschning",
-    title: "Fransar, makeup och gåva",
-    copy: "För enklare bokningar inför vardag, fest, event eller när du vill ge bort en behandling."
+type BookingService = {
+  id: string;
+  title: string;
+  treatmentTitle: string;
+  categoryTitle: string;
+  slug: string;
+  eyebrow: string;
+  summary: string;
+  description: string;
+  price: string;
+  duration: string;
+  practitioner: string;
+  chips: string[];
+  thumbClass: string;
+};
+
+const cleanTitle = (title: string) => title.replace(/\s+i Borås$/i, "");
+
+const titleForOption = (treatment: Treatment, option: PriceOption) => {
+  const treatmentTitle = cleanTitle(treatment.title);
+  const label = option.label?.trim();
+
+  if (!label || label.toLowerCase() === treatmentTitle.toLowerCase()) return treatmentTitle;
+  if (label.toLowerCase() === "fillers") return treatmentTitle;
+  if (label.toLowerCase() === "prophilo") return treatmentTitle;
+
+  return label;
+};
+
+const thumbClassFor = (treatment: Treatment) => {
+  const value = `${treatment.slug} ${treatment.category}`.toLowerCase();
+
+  if (value.includes("presentkort")) return "booking-thumb-gift";
+  if (value.includes("piercing")) return "booking-thumb-piercing";
+  if (value.includes("massage")) return "booking-thumb-massage";
+  if (value.includes("makeup")) return "booking-thumb-makeup";
+  if (value.includes("naglar") || value.includes("manikyr") || value.includes("pedikyr")) return "booking-thumb-nails";
+  if (value.includes("lash") || value.includes("frans")) return "booking-thumb-lashes";
+  if (value.includes("plasma")) return "booking-thumb-plasma";
+  if (value.includes("peeling") || value.includes("biorepeel") || value.includes("dubai")) return "booking-thumb-peeling";
+  if (value.includes("microneedling") || value.includes("bb-glow")) return "booking-thumb-microneedling";
+  if (value.includes("ansikts") || value.includes("marina") || value.includes("pure-cell") || value.includes("microdermabrasion")) {
+    return "booking-thumb-facial";
   }
-];
+  if (value.includes("filler") || value.includes("lapp")) return "booking-thumb-fillers";
 
-const bookingTreatments = [
-  { slug: "konsultation", group: "consultation", note: "Bästa start om du är osäker" },
-  { slug: "botox-boras", group: "injections", note: "Populärt val för linjer och uttryck" },
-  { slug: "lappfillers-boras", group: "injections", note: "För läppar, form och balans" },
-  { slug: "klassisk-ansiktsbehandling-boras", group: "skin", note: "Trygg start för hud och lyster" },
-  { slug: "microneedling-boras", group: "skin", note: "För struktur, porer och hudkvalitet" },
-  { slug: "biorepeel-boras", group: "skin", note: "Aktiv hudförnyelse med kort downtime" },
-  { slug: "lashlift-boras", group: "beauty", note: "Snabb detaljbehandling inför vardag eller event" }
-]
-  .map((item) => {
-    const treatment = getPublishedTreatmentBySlug(item.slug);
-    return treatment ? { ...item, treatment } : null;
+  return "booking-thumb-injections";
+};
+
+const serviceGroups = publishedCategories
+  .map((category) => {
+    const services = publishedTreatments
+      .filter((treatment) => treatment.category === category.slug)
+      .flatMap((treatment) => {
+        const options = treatment.priceOptions.length
+          ? treatment.priceOptions
+          : [{ label: cleanTitle(treatment.title), price: treatment.priceFrom, duration: treatment.duration }];
+
+        return options.map((option, optionIndex): BookingService => ({
+          id: `${treatment.slug}-${optionIndex}`,
+          title: titleForOption(treatment, option),
+          treatmentTitle: cleanTitle(treatment.title),
+          categoryTitle: cleanTitle(category.title),
+          slug: treatment.slug,
+          eyebrow: treatment.eyebrow,
+          summary: treatment.summary,
+          description: treatment.description,
+          price: option.price || treatment.priceFrom,
+          duration: option.duration || treatment.duration,
+          practitioner: treatment.practitioner,
+          chips: treatment.chips.slice(0, 3),
+          thumbClass: thumbClassFor(treatment)
+        }));
+      });
+
+    return { ...category, services };
   })
-  .filter(Boolean);
+  .filter((category) => category.services.length);
 
-const campaigns = [
-  {
-    code: "GLOWSTART",
-    title: "Glow start",
-    copy: "För dig som vill börja med hudanalys, rengöring och en första plan för lyster.",
-    meta: "Hudvård"
-  },
-  {
-    code: "EVENTREADY",
-    title: "Event ready",
-    copy: "Planera fransar, makeup eller hudvård inför datum där timing spelar roll.",
-    meta: "Inför event"
-  },
-  {
-    code: "CONSULTFIRST",
-    title: "Konsultation först",
-    copy: "Rätt upplägg när du vill jämföra Botox, fillers eller hudvård innan du bokar.",
-    meta: "Rådgivning"
-  }
+const serviceCount = serviceGroups.reduce((count, group) => count + group.services.length, 0);
+
+const calendarDays = [
+  { label: "Torsdag", date: "Kväll", slots: ["16:30", "17:15", "18:40"] },
+  { label: "Lördag", date: "Helg", slots: ["14:30", "15:20", "17:10"] },
+  { label: "Söndag", date: "Helg", slots: ["14:45", "16:00", "17:30"] },
+  { label: "Nästa vecka", date: "Flexibel", slots: ["Första lediga", "Kvällstid"] }
 ];
 
-const timeSlots = [
-  "Första lediga tid",
-  "Denna vecka",
-  "Nästa vecka",
-  "Kvällstid"
+const reviews = [
+  {
+    initials: "UÖ",
+    name: "Ulla-Britt Ö.",
+    text: "Väl omhändertagen och fick bra förklaring av vad som utfördes. Fin lokal och jag är så nöjd."
+  },
+  {
+    initials: "MG",
+    name: "Marie G.",
+    text: "Alltid lika nöjd med resultatet som blir efter behandlingen."
+  },
+  {
+    initials: "MS",
+    name: "Mahde S.",
+    text: "Professionellt arbete, tydlig expertis och bra uppföljning efter behandling."
+  }
 ];
 ---
 
@@ -85,152 +122,264 @@ const timeSlots = [
   data-booking-email={site.email}
 >
   <div class="subpage-shell booking-hub-shell">
-    <div class="booking-hub-heading">
-      <p class="section-kicker">Digital bokning</p>
-      <h2>Välj rätt behandling innan du öppnar bokningsportalen</h2>
-      <p>
-        Guiden hjälper dig att välja område, se passande behandlingar och ta med kampanjkod eller önskat tidsspann
-        när du slutför bokningen online.
-      </p>
+    <div class="booking-provider-profile">
+      <nav class="booking-breadcrumb" aria-label="Brödsmulor">
+        <a href="/">Hem</a>
+        <span aria-hidden="true">/</span>
+        <span>Boka</span>
+      </nav>
+
+      <div class="booking-provider-top">
+        <div>
+          <p class="section-kicker">Boka behandling</p>
+          <h2>PNK Beauty Klinik</h2>
+          <p class="booking-provider-address">Brämhultsvägen 4, 504 56 Borås</p>
+        </div>
+
+        <div class="booking-rating-summary" aria-label="4.8 av 5 baserat på 12 betyg">
+          <strong>4.8</strong>
+          <span class="booking-stars" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span class="is-partial"></span>
+          </span>
+          <a href="#booking-reviews">12 betyg</a>
+        </div>
+      </div>
+
+      <div class="booking-provider-nav" aria-label="Bokningssektioner">
+        <a href="#booking-services">Tjänster</a>
+        <a href="#booking-staff">Personal</a>
+        <a href="#booking-reviews">Betyg</a>
+        <a href="#booking-about">Om</a>
+      </div>
     </div>
 
-    <div class="booking-hub-grid">
-      <aside class="booking-sidebar" aria-label="Välj behandlingsområde">
-        <span class="booking-step">1. Välj område</span>
-        <div class="booking-picker" role="list">
-          {
-            bookingGroups.map((group, index) => (
-              <button
-                class:list={["booking-picker-option", index === 0 && "is-active"]}
-                type="button"
-                data-booking-category={group.id}
-                aria-pressed={index === 0 ? "true" : "false"}
-              >
-                <span>{group.label}</span>
-                <strong>{group.title}</strong>
-                <small>{group.copy}</small>
-              </button>
-            ))
-          }
-        </div>
-      </aside>
+    <div class="booking-workflow">
+      <div class="booking-workflow-step is-active">
+        <span>1</span>
+        <strong>Välj tjänst</strong>
+      </div>
+      <div class="booking-workflow-step">
+        <span>2</span>
+        <strong>Välj tid</strong>
+      </div>
+      <div class="booking-workflow-step">
+        <span>3</span>
+        <strong>Slutför</strong>
+      </div>
+    </div>
 
-      <div class="booking-main">
-        <section class="booking-treatment-picker" aria-label="Rekommenderade behandlingar">
-          <div class="booking-panel-heading">
-            <span class="booking-step">2. Välj behandling</span>
-            <p data-booking-summary-treatment>Start: konsultation eller rådgivning.</p>
+    <div class="booking-layout">
+      <main class="booking-service-list" id="booking-services" aria-label="Alla tjänster">
+        <section class="booking-gift-card" aria-label="Presentkort">
+          <span class="booking-service-image booking-thumb-gift" aria-hidden="true"></span>
+          <div>
+            <p>Presentkort</p>
+            <h3>Ge bort egentid</h3>
+            <span>Valfritt belopp för behandlingar, hudvård eller konsultation hos PNK Beauty Klinik.</span>
           </div>
-          <div class="booking-treatment-grid">
+          <a class="booking-service-link" href="/presentkort/">Läs mer</a>
+        </section>
+
+        <div class="booking-service-heading">
+          <div>
+            <p class="section-kicker">Alla tjänster</p>
+            <h2>{serviceCount} bokningsbara alternativ</h2>
+          </div>
+          <p>
+            Välj en behandling för att öppna kalendern. Du kan fortfarande läsa mer om varje behandlingsområde innan
+            du bestämmer dig.
+          </p>
+        </div>
+
+        {
+          serviceGroups.map((group) => (
+            <section class="booking-service-group" aria-labelledby={`booking-group-${group.slug}`}>
+              <button
+                class="booking-service-group-head"
+                type="button"
+                aria-expanded="true"
+                aria-controls={`booking-panel-${group.slug}`}
+                data-booking-toggle
+              >
+                <span>
+                  <strong id={`booking-group-${group.slug}`}>{cleanTitle(group.title)}</strong>
+                  <small>{group.eyebrow}</small>
+                </span>
+                <em>{group.services.length}</em>
+              </button>
+
+              <div class="booking-service-group-panel" id={`booking-panel-${group.slug}`}>
+                {
+                  group.services.map((service) => (
+                    <article class="booking-service-card">
+                      <span class:list={["booking-service-image", service.thumbClass]} aria-hidden="true"></span>
+                      <div class="booking-service-copy">
+                        <p>{service.eyebrow}</p>
+                        <h3>{service.title}</h3>
+                        <span>{service.duration}</span>
+                        <div class="booking-service-description">
+                          <span>{service.description}</span>
+                          <a href={`/behandlingar/${service.slug}/`}>Läs mer</a>
+                        </div>
+                        <div class="booking-service-chips" aria-label={`${service.title} etiketter`}>
+                          {service.chips.map((chip) => <span>{chip}</span>)}
+                        </div>
+                      </div>
+                      <div class="booking-service-action">
+                        <span>Pris</span>
+                        <strong>{service.price}</strong>
+                        <button
+                          class="booking-service-book"
+                          type="button"
+                          data-book-service={service.title}
+                          data-book-treatment={service.treatmentTitle}
+                          data-book-category={service.categoryTitle}
+                          data-book-price={service.price}
+                          data-book-duration={service.duration}
+                          data-book-practitioner={service.practitioner}
+                        >
+                          Boka
+                        </button>
+                      </div>
+                    </article>
+                  ))
+                }
+              </div>
+            </section>
+          ))
+        }
+
+        <section class="booking-proof" id="booking-reviews" aria-label="Omdömen">
+          <div class="booking-proof-head">
+            <div>
+              <p class="section-kicker">Omdömen</p>
+              <h2>4.8 av 5</h2>
+            </div>
+            <span>12 betyg</span>
+          </div>
+          <div class="booking-review-grid">
             {
-              bookingTreatments.map((item) => (
-                <article class="booking-treatment-card" data-booking-group={item.group}>
-                  <p>{item.treatment.eyebrow}</p>
-                  <h3>{item.treatment.title}</h3>
-                  <span>{item.note}</span>
-                  <dl>
-                    <div>
-                      <dt>Från</dt>
-                      <dd>{item.treatment.priceFrom}</dd>
-                    </div>
-                    <div>
-                      <dt>Tid</dt>
-                      <dd>{item.treatment.duration}</dd>
-                    </div>
-                  </dl>
+              reviews.map((review) => (
+                <article>
                   <div>
-                    <a href={`/behandlingar/${item.treatment.slug}/`}>Läs mer</a>
-                    <button type="button" data-select-treatment={item.treatment.title}>Välj</button>
+                    <span>{review.initials}</span>
+                    <strong>{review.name}</strong>
                   </div>
+                  <p>{review.text}</p>
                 </article>
               ))
             }
-            <article class="booking-treatment-card" data-booking-group="beauty">
-              <p>Ge bort egen tid</p>
-              <h3>Presentkort</h3>
-              <span>För behandlingar, hudvård eller rådgivning.</span>
-              <dl>
-                <div>
-                  <dt>Belopp</dt>
-                  <dd>Valfritt</dd>
-                </div>
-                <div>
-                  <dt>Leverans</dt>
-                  <dd>Efter kontakt</dd>
-                </div>
-              </dl>
-              <div>
-                <a href="/presentkort/">Läs mer</a>
-                <button type="button" data-select-treatment="Presentkort">Välj</button>
-              </div>
-            </article>
           </div>
         </section>
 
-        <section class="booking-campaigns" id="kampanjer" aria-label="Kampanjer och paket">
-          <div class="booking-panel-heading">
-            <span class="booking-step">3. Kampanj eller paket</span>
-            <p>Välj en kod att ta med i bokningen. Erbjudanden aktiveras först när kliniken bekräftar kampanjen.</p>
-          </div>
-          <div class="booking-campaign-grid">
+        <section class="booking-about" id="booking-about" aria-label="Om PNK Beauty Klinik">
+          <p class="section-kicker">Om företaget</p>
+          <h2>Professionella behandlingar i Borås</h2>
+          <p>
+            PNK Beauty Klinik erbjuder hudvård, injektionsbehandlingar, fransar, makeup, massage, naglar och
+            piercing. Injektionsbehandlingar utförs av specialist med lång erfarenhet, och varje besök planeras efter
+            dina mål, förutsättningar och önskat uttryck.
+          </p>
+        </section>
+      </main>
+
+      <aside class="booking-calendar-panel" data-booking-calendar aria-label="Kalender och sammanfattning" tabindex="-1">
+        <div class="booking-calendar-card">
+          <span class="booking-step">Kalender</span>
+          <h3 data-calendar-title>Välj en behandling</h3>
+          <p data-calendar-helper>
+            Klicka på Boka vid en behandling så öppnas kalendern med förslag på tider.
+          </p>
+
+          <dl class="booking-calendar-summary">
+            <div>
+              <dt>Behandling</dt>
+              <dd data-calendar-service>Ingen vald</dd>
+            </div>
+            <div>
+              <dt>Pris</dt>
+              <dd data-calendar-price>-</dd>
+            </div>
+            <div>
+              <dt>Tid</dt>
+              <dd data-calendar-duration>-</dd>
+            </div>
+            <div>
+              <dt>Behandlare</dt>
+              <dd data-calendar-practitioner>-</dd>
+            </div>
+          </dl>
+
+          <div class="booking-calendar-days" aria-label="Välj dag">
             {
-              campaigns.map((campaign) => (
-                <button type="button" class="booking-campaign-card" data-campaign-code={campaign.code}>
-                  <span>{campaign.meta}</span>
-                  <strong>{campaign.title}</strong>
-                  <small>{campaign.copy}</small>
-                  <b>{campaign.code}</b>
+              calendarDays.map((day, index) => (
+                <button
+                  class:list={[index === 0 && "is-active"]}
+                  type="button"
+                  data-book-day={`${day.label} ${day.date}`}
+                  aria-pressed={index === 0 ? "true" : "false"}
+                >
+                  <strong>{day.label}</strong>
+                  <span>{day.date}</span>
                 </button>
               ))
             }
           </div>
+
+          <div class="booking-calendar-slots" aria-label="Välj tid">
+            {
+              calendarDays[0].slots.map((slot, index) => (
+                <button
+                  class:list={[index === 0 && "is-active"]}
+                  type="button"
+                  data-book-time={slot}
+                  aria-pressed={index === 0 ? "true" : "false"}
+                >
+                  {slot}
+                </button>
+              ))
+            }
+          </div>
+
           <label class="booking-code-field">
             <span>Kampanjkod</span>
             <input type="text" value="" placeholder="Ex. GLOWSTART" data-booking-code />
           </label>
-        </section>
-      </div>
 
-      <aside class="booking-summary" aria-label="Sammanfattning">
-        <span class="booking-step">4. Slutför</span>
-        <h3>Din bokningsplan</h3>
-        <div class="booking-time-preview">
-          {
-            timeSlots.map((slot, index) => (
-              <button
-                class:list={[index === 0 && "is-active"]}
-                type="button"
-                data-time-slot={slot}
-                aria-pressed={index === 0 ? "true" : "false"}
-              >
-                {slot}
-              </button>
-            ))
-          }
+          <dl class="booking-confirmation-list">
+            <div>
+              <dt>Vald dag</dt>
+              <dd data-summary-day>{calendarDays[0].label} {calendarDays[0].date}</dd>
+            </div>
+            <div>
+              <dt>Vald tid</dt>
+              <dd data-summary-time>{calendarDays[0].slots[0]}</dd>
+            </div>
+            <div>
+              <dt>Kampanj</dt>
+              <dd data-summary-campaign>Ingen kod</dd>
+            </div>
+          </dl>
+
+          <a class="pill-link booking-complete-link" href={site.bookingUrl} target="_blank" rel="noreferrer">
+            Slutför i bokningsportal
+          </a>
+          <a class="booking-request-link" href={`mailto:${site.email}?subject=Bokningsf%C3%B6rfr%C3%A5gan%20PNK%20Beauty`}>
+            Skicka förfrågan via mail
+          </a>
         </div>
-        <dl class="booking-summary-list">
+
+        <section class="booking-side-card" id="booking-staff">
+          <h3>Personal</h3>
           <div>
-            <dt>Behandling</dt>
-            <dd data-summary-treatment>Konsultation eller rådgivning</dd>
+            <strong>Siamak Ghazanfari</strong>
+            <span>Injektionspecialist: Botox, fillers, trådlyft och fettreducering</span>
           </div>
           <div>
-            <dt>Tid</dt>
-            <dd data-summary-time>Första lediga tid</dd>
+            <strong>Shadi Dadfar</strong>
+            <span>Auktoriserad hudterapeut och professionell makeupartist</span>
           </div>
-          <div>
-            <dt>Kampanj</dt>
-            <dd data-summary-campaign>Ingen kod vald</dd>
-          </div>
-        </dl>
-        <a class="pill-link booking-complete-link" href={site.bookingUrl} target="_blank" rel="noreferrer">
-          Öppna bokningsportal
-        </a>
-        <a class="booking-request-link" href={`mailto:${site.email}?subject=Bokningsf%C3%B6rfr%C3%A5gan%20PNK%20Beauty`}>
-          Skicka förfrågan via mail
-        </a>
-        <p>
-          Exakta tider, behandlare och eventuella depositioner hanteras i bokningsportalen.
-        </p>
+        </section>
       </aside>
     </div>
   </div>
@@ -240,23 +389,37 @@ const timeSlots = [
   const root = document.querySelector("[data-booking-hub]");
 
   if (root) {
-    const categoryButtons = Array.from(root.querySelectorAll("[data-booking-category]"));
-    const treatmentCards = Array.from(root.querySelectorAll("[data-booking-group]"));
-    const treatmentButtons = Array.from(root.querySelectorAll("[data-select-treatment]"));
-    const campaignButtons = Array.from(root.querySelectorAll("[data-campaign-code]"));
-    const timeButtons = Array.from(root.querySelectorAll("[data-time-slot]"));
+    const serviceButtons = Array.from(root.querySelectorAll("[data-book-service]"));
+    const toggleButtons = Array.from(root.querySelectorAll("[data-booking-toggle]"));
+    const dayButtons = Array.from(root.querySelectorAll("[data-book-day]"));
+    const slotContainer = root.querySelector(".booking-calendar-slots");
     const codeInput = root.querySelector("[data-booking-code]");
-    const headingSummary = root.querySelector("[data-booking-summary-treatment]");
-    const summaryTreatment = root.querySelector("[data-summary-treatment]");
-    const summaryTime = root.querySelector("[data-summary-time]");
-    const summaryCampaign = root.querySelector("[data-summary-campaign]");
+    const calendar = root.querySelector("[data-booking-calendar]");
     const requestLink = root.querySelector(".booking-request-link");
     const bookingEmail = root.getAttribute("data-booking-email") || "info@pnkbeauty.se";
 
+    const slotsByDay = {
+      "Torsdag Kväll": ["16:30", "17:15", "18:40"],
+      "Lördag Helg": ["14:30", "15:20", "17:10"],
+      "Söndag Helg": ["14:45", "16:00", "17:30"],
+      "Nästa vecka Flexibel": ["Första lediga", "Kvällstid"]
+    };
+
     const state = {
-      treatment: "Konsultation eller rådgivning",
-      time: "Första lediga tid",
+      service: "",
+      treatment: "",
+      category: "",
+      price: "",
+      duration: "",
+      practitioner: "",
+      day: "Torsdag Kväll",
+      time: "16:30",
       campaign: ""
+    };
+
+    const setText = (selector, value) => {
+      const element = root.querySelector(selector);
+      if (element) element.textContent = value;
     };
 
     const updateRequestLink = () => {
@@ -264,7 +427,10 @@ const timeSlots = [
 
       const subject = "Bokningsförfrågan PNK Beauty";
       const body = [
-        `Behandling: ${state.treatment}`,
+        `Behandling: ${state.service || "Ej vald"}`,
+        `Kategori: ${state.category || "Ej vald"}`,
+        `Pris: ${state.price || "Ej valt"}`,
+        `Dag: ${state.day}`,
         `Tid: ${state.time}`,
         `Kampanjkod: ${state.campaign || "Ingen"}`,
         "",
@@ -275,82 +441,104 @@ const timeSlots = [
       requestLink.href = `mailto:${bookingEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     };
 
-    const syncSummary = () => {
-      if (headingSummary) headingSummary.textContent = `Valt: ${state.treatment}.`;
-      if (summaryTreatment) summaryTreatment.textContent = state.treatment;
-      if (summaryTime) summaryTime.textContent = state.time;
-      if (summaryCampaign) summaryCampaign.textContent = state.campaign || "Ingen kod vald";
+    const syncCalendar = () => {
+      setText("[data-calendar-title]", state.service ? "Välj tid" : "Välj en behandling");
+      setText(
+        "[data-calendar-helper]",
+        state.service
+          ? `${state.service} är vald. Välj en tid nedan och slutför i bokningsportalen.`
+          : "Klicka på Boka vid en behandling så öppnas kalendern med förslag på tider."
+      );
+      setText("[data-calendar-service]", state.service || "Ingen vald");
+      setText("[data-calendar-price]", state.price || "-");
+      setText("[data-calendar-duration]", state.duration || "-");
+      setText("[data-calendar-practitioner]", state.practitioner || "-");
+      setText("[data-summary-day]", state.day);
+      setText("[data-summary-time]", state.time);
+      setText("[data-summary-campaign]", state.campaign || "Ingen kod");
+      calendar?.classList.toggle("has-service", Boolean(state.service));
       updateRequestLink();
     };
 
-    const setCategory = (category) => {
-      categoryButtons.forEach((button) => {
-        const isActive = button.getAttribute("data-booking-category") === category;
-        button.classList.toggle("is-active", isActive);
-        button.setAttribute("aria-pressed", String(isActive));
+    const setTime = (button) => {
+      const time = button.getAttribute("data-book-time");
+      if (!time) return;
+      state.time = time;
+      Array.from(root.querySelectorAll("[data-book-time]")).forEach((item) => {
+        const isActive = item === button;
+        item.classList.toggle("is-active", isActive);
+        item.setAttribute("aria-pressed", String(isActive));
       });
-
-      treatmentCards.forEach((card) => {
-        const isVisible = card.getAttribute("data-booking-group") === category;
-        card.toggleAttribute("hidden", !isVisible);
-      });
-
-      const firstVisibleButton = treatmentButtons.find(
-        (button) => !button.closest("[data-booking-group]")?.hasAttribute("hidden")
-      );
-      const treatment = firstVisibleButton?.getAttribute("data-select-treatment");
-      if (treatment) {
-        state.treatment = treatment;
-        syncSummary();
-      }
+      syncCalendar();
     };
 
-    categoryButtons.forEach((button) => {
+    const renderSlots = (slots) => {
+      if (!slotContainer) return;
+      slotContainer.innerHTML = "";
+
+      slots.forEach((slot, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = slot;
+        button.dataset.bookTime = slot;
+        button.classList.toggle("is-active", index === 0);
+        button.setAttribute("aria-pressed", String(index === 0));
+        button.addEventListener("click", () => setTime(button));
+        slotContainer.append(button);
+      });
+
+      state.time = slots[0] || "Första lediga";
+    };
+
+    serviceButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const category = button.getAttribute("data-booking-category");
-        if (category) setCategory(category);
+        state.service = button.getAttribute("data-book-service") || "";
+        state.treatment = button.getAttribute("data-book-treatment") || "";
+        state.category = button.getAttribute("data-book-category") || "";
+        state.price = button.getAttribute("data-book-price") || "";
+        state.duration = button.getAttribute("data-book-duration") || "";
+        state.practitioner = button.getAttribute("data-book-practitioner") || "";
+
+        serviceButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+        syncCalendar();
+
+        if (calendar instanceof HTMLElement) {
+          calendar.scrollIntoView({ behavior: "smooth", block: "start" });
+          calendar.focus({ preventScroll: true });
+        }
       });
     });
 
-    treatmentButtons.forEach((button) => {
+    toggleButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const treatment = button.getAttribute("data-select-treatment");
-        if (!treatment) return;
-        state.treatment = treatment;
-        syncSummary();
+        const panelId = button.getAttribute("aria-controls");
+        const panel = panelId ? root.querySelector(`#${CSS.escape(panelId)}`) : null;
+        const expanded = button.getAttribute("aria-expanded") === "true";
+        button.setAttribute("aria-expanded", String(!expanded));
+        panel?.toggleAttribute("hidden", expanded);
       });
     });
 
-    campaignButtons.forEach((button) => {
+    dayButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const code = button.getAttribute("data-campaign-code") ?? "";
-        state.campaign = code;
-        if (codeInput instanceof HTMLInputElement) codeInput.value = code;
-        campaignButtons.forEach((item) => item.classList.toggle("is-active", item === button));
-        syncSummary();
+        const day = button.getAttribute("data-book-day");
+        if (!day) return;
+        state.day = day;
+        dayButtons.forEach((item) => {
+          const isActive = item === button;
+          item.classList.toggle("is-active", isActive);
+          item.setAttribute("aria-pressed", String(isActive));
+        });
+        renderSlots(slotsByDay[day] || ["Första lediga"]);
+        syncCalendar();
       });
     });
 
     codeInput?.addEventListener("input", () => {
       state.campaign = codeInput instanceof HTMLInputElement ? codeInput.value.trim() : "";
-      syncSummary();
+      syncCalendar();
     });
 
-    timeButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const slot = button.getAttribute("data-time-slot");
-        if (!slot) return;
-        state.time = slot;
-        timeButtons.forEach((item) => {
-          const isActive = item === button;
-          item.classList.toggle("is-active", isActive);
-          item.setAttribute("aria-pressed", String(isActive));
-        });
-        syncSummary();
-      });
-    });
-
-    setCategory("consultation");
-    syncSummary();
+    syncCalendar();
   }
 </script>

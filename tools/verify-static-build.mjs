@@ -110,11 +110,18 @@ check(globalStyles.includes(".footer-mobile-compact"), "Footer CSS should style 
 check(globalStyles.includes(".site-footer .footer-mobile-links"), "Mobile footer links should override the base footer nav layout");
 
 const bookingHubChecks = [
-  { needle: "booking-hub", message: "Booking page should render the premium booking hub" },
-  { needle: "booking-campaigns", message: "Booking page should include campaign cards" },
-  { needle: "booking-treatment-picker", message: "Booking page should include treatment choice guidance" },
-  { needle: "booking-time-preview", message: "Booking page should include time slot preview" },
-  { needle: "data-provider-ready=\"fresha\"", message: "Booking page should be marked as Fresha-ready" }
+  { needle: "booking-hub", message: "Booking page should render the booking hub" },
+  { needle: "booking-provider-profile", message: "Booking page should include a provider profile block" },
+  { needle: "booking-rating-summary", message: "Booking page should include clinic rating summary" },
+  { needle: "booking-gift-card", message: "Booking page should include gift card booking entry" },
+  { needle: "booking-service-list", message: "Booking page should include the full service list" },
+  { needle: "booking-service-group", message: "Booking page should group services by treatment category" },
+  { needle: "booking-service-image", message: "Booking page should include service thumbnails" },
+  { needle: "booking-service-book", message: "Booking service rows should expose booking actions" },
+  { needle: "booking-calendar-panel", message: "Booking page should include the calendar panel" },
+  { needle: "data-booking-calendar", message: "Booking calendar should be addressable by the workflow script" },
+  { needle: "data-provider-ready=\"fresha\"", message: "Booking page should be marked as Fresha-ready" },
+  { needle: "Alla tjänster", message: "Booking page should use a Bokadirekt-style all-services section" }
 ];
 
 for (const { needle, message } of bookingHubChecks) {
