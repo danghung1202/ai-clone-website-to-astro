@@ -119,6 +119,8 @@ const bookingHubChecks = [
   { needle: "booking-service-image", message: "Booking page should include service thumbnails" },
   { needle: "booking-service-book", message: "Booking service rows should expose booking actions" },
   { needle: "booking-calendar-panel", message: "Booking page should include the calendar panel" },
+  { needle: "booking-calendar-month", message: "Booking page should include a monthly calendar grid" },
+  { needle: "data-book-date", message: "Booking calendar should expose selectable date buttons" },
   { needle: "data-booking-calendar", message: "Booking calendar should be addressable by the workflow script" },
   { needle: "data-provider-ready=\"fresha\"", message: "Booking page should be marked as Fresha-ready" },
   { needle: "Alla tjänster", message: "Booking page should use a Bokadirekt-style all-services section" }
@@ -129,6 +131,8 @@ for (const { needle, message } of bookingHubChecks) {
 }
 
 check(globalStyles.includes(".booking-hub"), "Booking hub should have dedicated CSS");
+check(globalStyles.includes(".booking-service-card.is-mobile-compact"), "Booking cards should expose compact mobile styling");
+check(globalStyles.includes(".booking-calendar-month"), "Booking calendar grid should have dedicated CSS");
 
 const homeHeroVideoTag = builtHome.match(/<video class="hero-video"[^>]*>/)?.[0] ?? "";
 check(homeHeroVideoTag.includes("hero-video"), "Home should render hero video media");

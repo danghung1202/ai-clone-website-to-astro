@@ -88,12 +88,48 @@ const serviceGroups = publishedCategories
 
 const serviceCount = serviceGroups.reduce((count, group) => count + group.services.length, 0);
 
-const calendarDays = [
-  { label: "Torsdag", date: "Kväll", slots: ["16:30", "17:15", "18:40"] },
-  { label: "Lördag", date: "Helg", slots: ["14:30", "15:20", "17:10"] },
-  { label: "Söndag", date: "Helg", slots: ["14:45", "16:00", "17:30"] },
-  { label: "Nästa vecka", date: "Flexibel", slots: ["Första lediga", "Kvällstid"] }
+type CalendarDay = {
+  day?: string;
+  label?: string;
+  value?: string;
+  slots?: string[];
+  empty?: boolean;
+  available?: boolean;
+};
+
+const calendarWeeks: CalendarDay[][] = [
+  [
+    { day: "6", label: "Mån", value: "Måndag 6 juli" },
+    { day: "7", label: "Tis", value: "Tisdag 7 juli" },
+    { day: "8", label: "Ons", value: "Onsdag 8 juli" },
+    { day: "9", label: "Tor", value: "Torsdag 9 juli", slots: ["16:30", "17:15", "18:40"], available: true },
+    { day: "10", label: "Fre", value: "Fredag 10 juli" },
+    { day: "11", label: "Lör", value: "Lördag 11 juli", slots: ["14:30", "15:20", "17:10"], available: true },
+    { day: "12", label: "Sön", value: "Söndag 12 juli", slots: ["14:45", "16:00", "17:30"], available: true }
+  ],
+  [
+    { day: "13", label: "Mån", value: "Måndag 13 juli" },
+    { day: "14", label: "Tis", value: "Tisdag 14 juli" },
+    { day: "15", label: "Ons", value: "Onsdag 15 juli" },
+    { day: "16", label: "Tor", value: "Torsdag 16 juli", slots: ["16:00", "17:40", "20:10"], available: true },
+    { day: "17", label: "Fre", value: "Fredag 17 juli" },
+    { day: "18", label: "Lör", value: "Lördag 18 juli", slots: ["14:30", "15:50", "18:00"], available: true },
+    { day: "19", label: "Sön", value: "Söndag 19 juli", slots: ["14:30", "16:20", "17:40"], available: true }
+  ],
+  [
+    { day: "20", label: "Mån", value: "Måndag 20 juli" },
+    { day: "21", label: "Tis", value: "Tisdag 21 juli" },
+    { day: "22", label: "Ons", value: "Onsdag 22 juli" },
+    { day: "23", label: "Tor", value: "Torsdag 23 juli", slots: ["16:15", "18:00", "21:10"], available: true },
+    { day: "24", label: "Fre", value: "Fredag 24 juli" },
+    { day: "25", label: "Lör", value: "Lördag 25 juli", slots: ["14:30", "16:00", "18:20"], available: true },
+    { day: "26", label: "Sön", value: "Söndag 26 juli", slots: ["14:45", "15:45", "17:30"], available: true }
+  ]
 ];
+
+const firstAvailableDate = calendarWeeks.flat().find((date) => date.available);
+const initialDate = firstAvailableDate?.value ?? "Välj datum";
+const initialSlots = firstAvailableDate?.slots ?? ["Första lediga"];
 
 const reviews = [
   {
@@ -211,7 +247,7 @@ const reviews = [
               <div class="booking-service-group-panel" id={`booking-panel-${group.slug}`}>
                 {
                   group.services.map((service) => (
-                    <article class="booking-service-card">
+                    <article class="booking-service-card is-mobile-compact">
                       <span class:list={["booking-service-image", service.thumbClass]} aria-hidden="true"></span>
                       <div class="booking-service-copy">
                         <p>{service.eyebrow}</p>
@@ -310,25 +346,40 @@ const reviews = [
             </div>
           </dl>
 
-          <div class="booking-calendar-days" aria-label="Välj dag">
-            {
-              calendarDays.map((day, index) => (
-                <button
-                  class:list={[index === 0 && "is-active"]}
-                  type="button"
-                  data-book-day={`${day.label} ${day.date}`}
-                  aria-pressed={index === 0 ? "true" : "false"}
-                >
-                  <strong>{day.label}</strong>
-                  <span>{day.date}</span>
-                </button>
-              ))
-            }
+          <div class="booking-calendar-month" aria-label="Välj datum">
+            <div class="booking-calendar-month-head">
+              <button type="button" aria-label="Föregående månad" disabled>‹</button>
+              <strong>Juli</strong>
+              <button type="button" aria-label="Nästa månad" disabled>›</button>
+            </div>
+            <div class="booking-calendar-weekdays" aria-hidden="true">
+              <span>M</span><span>T</span><span>O</span><span>T</span><span>F</span><span>L</span><span>S</span>
+            </div>
+            <div class="booking-calendar-date-grid">
+              {
+                calendarWeeks.flat().map((date) => (
+                  date.empty ? (
+                    <span class="booking-calendar-date is-empty" aria-hidden="true"></span>
+                  ) : (
+                    <button
+                      class:list={["booking-calendar-date", date.available && "is-available", date.value === initialDate && "is-active"]}
+                      type="button"
+                      data-book-date={date.value}
+                      data-book-slots={date.slots?.join("|")}
+                      aria-pressed={date.value === initialDate ? "true" : "false"}
+                      disabled={!date.available}
+                    >
+                      <span>{date.day}</span>
+                    </button>
+                  )
+                ))
+              }
+            </div>
           </div>
 
           <div class="booking-calendar-slots" aria-label="Välj tid">
             {
-              calendarDays[0].slots.map((slot, index) => (
+              initialSlots.map((slot, index) => (
                 <button
                   class:list={[index === 0 && "is-active"]}
                   type="button"
@@ -349,11 +400,11 @@ const reviews = [
           <dl class="booking-confirmation-list">
             <div>
               <dt>Vald dag</dt>
-              <dd data-summary-day>{calendarDays[0].label} {calendarDays[0].date}</dd>
+              <dd data-summary-day>{initialDate}</dd>
             </div>
             <div>
               <dt>Vald tid</dt>
-              <dd data-summary-time>{calendarDays[0].slots[0]}</dd>
+              <dd data-summary-time>{initialSlots[0]}</dd>
             </div>
             <div>
               <dt>Kampanj</dt>
@@ -391,19 +442,12 @@ const reviews = [
   if (root) {
     const serviceButtons = Array.from(root.querySelectorAll("[data-book-service]"));
     const toggleButtons = Array.from(root.querySelectorAll("[data-booking-toggle]"));
-    const dayButtons = Array.from(root.querySelectorAll("[data-book-day]"));
+    const dateButtons = Array.from(root.querySelectorAll("[data-book-date]"));
     const slotContainer = root.querySelector(".booking-calendar-slots");
     const codeInput = root.querySelector("[data-booking-code]");
     const calendar = root.querySelector("[data-booking-calendar]");
     const requestLink = root.querySelector(".booking-request-link");
     const bookingEmail = root.getAttribute("data-booking-email") || "info@pnkbeauty.se";
-
-    const slotsByDay = {
-      "Torsdag Kväll": ["16:30", "17:15", "18:40"],
-      "Lördag Helg": ["14:30", "15:20", "17:10"],
-      "Söndag Helg": ["14:45", "16:00", "17:30"],
-      "Nästa vecka Flexibel": ["Första lediga", "Kvällstid"]
-    };
 
     const state = {
       service: "",
@@ -412,7 +456,7 @@ const reviews = [
       price: "",
       duration: "",
       practitioner: "",
-      day: "Torsdag Kväll",
+      day: "Torsdag 9 juli",
       time: "16:30",
       campaign: ""
     };
@@ -442,11 +486,11 @@ const reviews = [
     };
 
     const syncCalendar = () => {
-      setText("[data-calendar-title]", state.service ? "Välj tid" : "Välj en behandling");
+      setText("[data-calendar-title]", state.service ? "Välj datum och tid" : "Välj en behandling");
       setText(
         "[data-calendar-helper]",
         state.service
-          ? `${state.service} är vald. Välj en tid nedan och slutför i bokningsportalen.`
+          ? `${state.service} är vald. Välj datum i kalendern och därefter en ledig tid.`
           : "Klicka på Boka vid en behandling så öppnas kalendern med förslag på tider."
       );
       setText("[data-calendar-service]", state.service || "Ingen vald");
@@ -519,17 +563,18 @@ const reviews = [
       });
     });
 
-    dayButtons.forEach((button) => {
+    dateButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const day = button.getAttribute("data-book-day");
-        if (!day) return;
-        state.day = day;
-        dayButtons.forEach((item) => {
+        const date = button.getAttribute("data-book-date");
+        const slots = (button.getAttribute("data-book-slots") || "").split("|").filter(Boolean);
+        if (!date || !slots.length) return;
+        state.day = date;
+        dateButtons.forEach((item) => {
           const isActive = item === button;
           item.classList.toggle("is-active", isActive);
           item.setAttribute("aria-pressed", String(isActive));
         });
-        renderSlots(slotsByDay[day] || ["Första lediga"]);
+        renderSlots(slots);
         syncCalendar();
       });
     });
