@@ -44,23 +44,37 @@ const primaryNavItems = navItems.filter((item) => item.label !== "Behandlingar")
 
   <div class="mega-menu" id="treatment-mega-menu" data-mega-menu>
     <div class="mega-menu-shell">
-      <div class="mega-menu-intro">
-        <p class="mega-menu-kicker">Behandlingar</p>
-        <h2>Hitta rätt behandling</h2>
-        <p>
-          Utforska PNK Beauty Kliniks behandlingar efter mål, område och nivå av rådgivning. Alla injektioner
-          planeras individuellt.
-        </p>
-        <a href="/behandlingar/">Se alla behandlingar</a>
-      </div>
-      <div class="mega-menu-grid">
+      <div class="mega-menu-category-list" role="list">
         {
-          megaMenuGroups.map((group) => (
-            <section class="mega-menu-group">
-              <p>{group.eyebrow}</p>
-              <a class="mega-menu-group-title" href={group.href}>{group.title}</a>
-              <span>{group.description}</span>
-              <div>
+          megaMenuGroups.map((group, index) => (
+            <section class:list={["mega-menu-category-card", index === 0 && "is-active"]} role="listitem">
+              <button
+                type="button"
+                aria-expanded={index === 0 ? "true" : "false"}
+                data-mega-category={group.title}
+              >
+                <img class="mega-menu-card-image" src={group.image} alt="" loading="lazy" />
+                <span>
+                  <small>{group.eyebrow}</small>
+                  <strong>{group.title}</strong>
+                  <em>{group.links.length} behandlingar</em>
+                </span>
+              </button>
+            </section>
+          ))
+        }
+      </div>
+      <div class="mega-menu-link-panels">
+        {
+          megaMenuGroups.map((group, index) => (
+            <section class="mega-menu-category-links" data-mega-panel={group.title} hidden={index !== 0}>
+              <div class="mega-menu-panel-copy">
+                <p>{group.eyebrow}</p>
+                <h2>{group.title}</h2>
+                <span>{group.description}</span>
+              </div>
+              <div class="mega-menu-link-grid">
+                <a class="mega-menu-overview-link" href={group.href}>Översikt</a>
                 {group.links.map((item) => (
                   <a href={item.href}>{item.label}</a>
                 ))}
@@ -110,6 +124,8 @@ const primaryNavItems = navItems.filter((item) => item.label !== "Behandlingar")
   const backdrop = document.querySelector("[data-menu-backdrop]");
   const closeButton = document.querySelector("[data-menu-close]");
   const megaButton = document.querySelector("[data-mega-button]");
+  const megaCategoryButtons = Array.from(document.querySelectorAll("[data-mega-category]"));
+  const megaPanels = Array.from(document.querySelectorAll("[data-mega-panel]"));
   const focusableSelector = "a[href], button:not([disabled]), summary, [tabindex]:not([tabindex='-1'])";
   let lastFocusedElement = null;
 
@@ -155,6 +171,23 @@ const primaryNavItems = navItems.filter((item) => item.label !== "Behandlingar")
     header?.toggleAttribute("data-mega-open", open);
   };
 
+  const setMegaCategory = (activeButton) => {
+    if (!(activeButton instanceof HTMLElement)) return;
+    const activeCategory = activeButton.dataset.megaCategory;
+
+    megaCategoryButtons.forEach((button) => {
+      if (!(button instanceof HTMLElement)) return;
+      const isActive = button === activeButton;
+      button.setAttribute("aria-expanded", String(isActive));
+      button.closest(".mega-menu-category-card")?.classList.toggle("is-active", isActive);
+    });
+
+    megaPanels.forEach((panel) => {
+      if (!(panel instanceof HTMLElement)) return;
+      panel.hidden = panel.dataset.megaPanel !== activeCategory;
+    });
+  };
+
   setDrawerOpen(false);
   setMegaOpen(false);
   syncHeaderTone();
@@ -183,6 +216,13 @@ const primaryNavItems = navItems.filter((item) => item.label !== "Behandlingar")
   megaButton?.addEventListener("click", () => {
     const open = megaButton.getAttribute("aria-expanded") === "true";
     setMegaOpen(!open);
+  });
+
+  megaCategoryButtons.forEach((categoryButton) => {
+    categoryButton.addEventListener("click", () => {
+      setMegaCategory(categoryButton);
+      setMegaOpen(true);
+    });
   });
 
   document.addEventListener("click", (event) => {

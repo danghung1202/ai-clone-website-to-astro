@@ -130,9 +130,28 @@ for (const { needle, message } of bookingHubChecks) {
   check(builtBooking.includes(needle), message);
 }
 
+check(!builtBooking.includes("booking-provider-nav"), "Booking page should skip the provider section jump nav");
+check(
+  !builtBooking.includes("Välj behandling med guidning, ta med kampanjkod"),
+  "Booking page hero should not include the old long helper copy"
+);
+
 check(globalStyles.includes(".booking-hub"), "Booking hub should have dedicated CSS");
 check(globalStyles.includes(".booking-service-card.is-mobile-compact"), "Booking cards should expose compact mobile styling");
 check(globalStyles.includes(".booking-calendar-month"), "Booking calendar grid should have dedicated CSS");
+
+const desktopMegaMenuChecks = [
+  { needle: "mega-menu-category-card", message: "Desktop mega menu should render image-led category cards" },
+  { needle: "mega-menu-card-image", message: "Desktop mega menu category cards should include images" },
+  { needle: "data-mega-category", message: "Desktop mega menu should expose category toggles" },
+  { needle: "mega-menu-category-links", message: "Desktop mega menu should reveal treatment links per category" }
+];
+
+for (const { needle, message } of desktopMegaMenuChecks) {
+  check(builtHome.includes(needle), message);
+}
+
+check(globalStyles.includes(".mega-menu-category-card"), "Desktop mega menu image cards should have dedicated CSS");
 
 const homeHeroVideoTag = builtHome.match(/<video class="hero-video"[^>]*>/)?.[0] ?? "";
 check(homeHeroVideoTag.includes("hero-video"), "Home should render hero video media");

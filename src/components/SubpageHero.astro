@@ -11,7 +11,7 @@ interface Action {
 interface Props {
   eyebrow: string;
   title: string;
-  copy: string;
+  copy?: string;
   image: string;
   canonicalPath?: string;
   actions?: Action[];
@@ -28,7 +28,7 @@ const { eyebrow, title, copy, actions = [] } = Astro.props;
   <div class="subpage-hero-inner">
     <p class="section-kicker">{eyebrow}</p>
     <h1 class="subpage-hero-title">{title}</h1>
-    <p class="subpage-hero-copy">{copy}</p>
+    {copy && <p class="subpage-hero-copy">{copy}</p>}
     {
       actions.length > 0 && (
         <div class="subpage-hero-actions">
