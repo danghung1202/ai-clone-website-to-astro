@@ -1,3 +1,145 @@
+# PNK Beauty Klinik
+
+Astro static site for PNK Beauty Klinik in Boras. The site is built as reusable pages, components, and data files so content can be edited without digging through generated HTML.
+
+## Quick Start
+
+```bash
+npm install
+npm run dev
+```
+
+Open the local URL printed by Astro. For a production-style check:
+
+```bash
+npm run verify:static
+```
+
+That command builds the site, verifies expected routes/sitemap/static output, and checks motion runtime assumptions.
+
+## Where To Edit
+
+Use these files first. Avoid editing built files in `dist/`.
+
+| Area | Main Files |
+| --- | --- |
+| Landing page / home page | `src/pages/index.astro`, `src/components/Hero.astro`, `src/components/Intro.astro`, `src/components/Services.astro`, `src/components/Atmosphere.astro`, `src/components/Testimonials.astro`, `src/components/Contact.astro`, `src/data/home.ts` |
+| Header, menu, footer | `src/components/Header.astro`, `src/components/Footer.astro`, `src/data/navigation.ts` |
+| Booking page | `src/pages/boka.astro`, `src/components/BookingHub.astro` |
+| Treatments, prices, service pages | `src/data/treatments.ts`, `src/components/TreatmentPage.astro`, `src/components/CategoryPage.astro`, `src/pages/behandlingar/[slug].astro` |
+| Articles | `src/data/articles.ts`, `src/components/ArticlePage.astro`, `src/pages/artiklar/[slug].astro` |
+| Global clinic info | `src/data/site.ts` |
+| Styling | `src/styles/global.css` |
+| Animations | `src/scripts/motion.ts` |
+| Images and media | `public/images/pnk/` |
+
+## Landing Page Notes
+
+The homepage is assembled from components in `src/pages/index.astro`. For a new landing page experiment, create a branch first, then edit the homepage components and data:
+
+```bash
+git checkout pnk-beauty-buildout
+git pull
+git checkout -b landing/pnk-beauty-homepage
+```
+
+Recommended edit order:
+
+1. Content and images: `src/data/home.ts`
+2. Layout structure: `src/pages/index.astro`
+3. Section markup: `src/components/Hero.astro`, `src/components/Services.astro`, etc.
+4. Visual styling: `src/styles/global.css`
+5. Motion: `src/scripts/motion.ts`
+
+Run `npm run verify:static` before opening a pull request.
+
+## Branch Workflow
+
+Use one branch per task. Do not edit `main` directly.
+
+Examples:
+
+```bash
+git checkout -b landing/pnk-beauty-homepage
+git checkout -b fix/mobile-booking-cards
+git checkout -b content/treatment-copy-update
+```
+
+Commit only the files that belong to the change:
+
+```bash
+git status --short
+git add src/pages/index.astro src/components/Hero.astro src/data/home.ts src/styles/global.css
+git commit -m "Update PNK landing page"
+git push -u origin landing/pnk-beauty-homepage
+```
+
+Then open a pull request on GitHub. Use the PR checklist in `.github/pull_request_template.md`.
+
+## Current Branches To Publish
+
+The completed buildout branch is:
+
+```bash
+pnk-beauty-buildout
+```
+
+This branch contains the PNK Beauty site buildout and recent booking/menu refinements. A clean starting branch for landing-page work can be created from it:
+
+```bash
+git checkout pnk-beauty-buildout
+git checkout -b landing/pnk-beauty-homepage
+```
+
+## Routes
+
+Expected static routes are listed in:
+
+```text
+tools/expected-routes.mjs
+```
+
+If you add a page, also add it there so `npm run verify:static` catches missing output and sitemap issues.
+
+## Deployment
+
+This is a static Astro site:
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Canonical site URL: `https://pnkbeauty.se`
+
+The same settings work for Netlify, Vercel, Cloudflare Pages, or any static host.
+
+## GitHub Auth
+
+Publishing requires a valid GitHub login:
+
+```bash
+gh auth status
+gh auth login -h github.com
+git push -u origin <branch-name>
+```
+
+If `gh auth status` says the token is invalid, re-authenticate before pushing or creating pull requests.
+
+## Do Not Commit
+
+These folders are local research or QA artifacts unless a reviewer explicitly asks for them:
+
+```text
+.playwright-cli/
+.superpowers/
+docs/design-references/
+docs/motion-capture/
+docs/research/
+output/
+```
+
+---
+
+## Legacy Clone Tool Notes
+
 # Clone to Astro
 
 A Claude Code skill that reverse-engineers any website and rebuilds it as a production-ready
